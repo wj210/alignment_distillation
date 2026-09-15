@@ -1,0 +1,25 @@
+.venv/
+# Keep DS4F results and the three original-base student pairs' benchmark traces.
+/results/**
+!/results/**/
+!/results/deepseek_v4_flash_20260907/**
+!/results/deepseek_deceptionbench_high_20260907/**
+!/results/qwen35_9b_wildchat/alignment/**/*agentic-misalignment*.eval
+!/results/qwen35_9b_wildchat/alignment/**/*deceptionbench*.eval
+!/results/qwen35_9b_openthoughts/alignment/**/*agentic-misalignment*.eval
+!/results/qwen35_9b_openthoughts/alignment/**/*deceptionbench*.eval
+!/results/qwen35_9b_wildchat_openthoughts/alignment/**/*agentic-misalignment*.eval
+!/results/qwen35_9b_wildchat_openthoughts/alignment/**/*deceptionbench*.eval
+.env
+.venv-*/
+__pycache__/
+*.py[cod]
+/utils/api_key.py
+/data
+logs/
+tests/
+k3_updated.pdf
+worker.sh
+.venv-training
+.codex
+.agents

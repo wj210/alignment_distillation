@@ -1,0 +1,4 @@
+inspect-ai==0.3.262
+inspect-evals[agentic_misalignment]==0.19.0
+inspect-deceptionbench @ git+https://github.com/WatchTree-19/inspect-deceptionbench.git@8683bf5a480f938b812aa5078fb0ee7d12a74483
+openai>=3.1.0

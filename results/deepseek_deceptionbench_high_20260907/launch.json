@@ -1,0 +1,71 @@
+{
+  "started_utc": "2026-09-07T15:47:50.274671+00:00",
+  "runs": [
+    {
+      "label": "0423",
+      "pid": 165238,
+      "command": [
+        ".venv/bin/python",
+        "evals/run.py",
+        "--model",
+        "openrouter/deepseek/deepseek-v4-flash",
+        "--tasks",
+        "deceptionbench",
+        "--judge",
+        "gpt-5.4",
+        "--target-concurrency",
+        "64",
+        "--sample-concurrency",
+        "64",
+        "--task-concurrency",
+        "1",
+        "--judge-concurrency",
+        "4",
+        "--enable-thinking",
+        "--reasoning-effort",
+        "high",
+        "--temperature",
+        "1",
+        "--top-p",
+        "0.95",
+        "--max-output-tokens",
+        "32768",
+        "--results",
+        "results/deepseek_deceptionbench_high_20260907"
+      ]
+    },
+    {
+      "label": "0731",
+      "pid": 165239,
+      "command": [
+        ".venv/bin/python",
+        "evals/run.py",
+        "--model",
+        "openrouter/deepseek/deepseek-v4-flash-0731",
+        "--tasks",
+        "deceptionbench",
+        "--judge",
+        "gpt-5.4",
+        "--target-concurrency",
+        "64",
+        "--sample-concurrency",
+        "64",
+        "--task-concurrency",
+        "1",
+        "--judge-concurrency",
+        "4",
+        "--enable-thinking",
+        "--reasoning-effort",
+        "high",
+        "--temperature",
+        "1",
+        "--top-p",
+        "0.95",
+        "--max-output-tokens",
+        "32768",
+        "--results",
+        "results/deepseek_deceptionbench_high_20260907"
+      ]
+    }
+  ]
+}

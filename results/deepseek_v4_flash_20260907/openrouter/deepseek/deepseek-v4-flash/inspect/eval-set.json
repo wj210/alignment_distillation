@@ -1,0 +1,71 @@
+{
+  "eval_set_id": "gg9nzXVkJPniLL5tfNA5EK",
+  "tasks": [
+    {
+      "name": "agentic_misalignment_blackmail",
+      "task_id": "AkHdxWS3rDCdsHYahXKzdu",
+      "task_args": {
+        "scenario": "blackmail",
+        "grader_model": {
+          "model": "openai-api/eval-judge/gpt-5.4-2026-03-05",
+          "config": {
+            "max_retries": 10,
+            "max_connections": 4
+          },
+          "base_url": "https://algo-arch-api-i18n.byted.org/ai-gateway/openai/v1",
+          "model_args": {}
+        }
+      },
+      "model": "openrouter/deepseek/deepseek-v4-flash",
+      "model_args": {
+        "stream": true,
+        "reasoning_enabled": true
+      },
+      "sequence": 0
+    },
+    {
+      "name": "agentic_misalignment_leaking",
+      "task_id": "B788ipNAcZGmTA4joqgdrF",
+      "task_args": {
+        "scenario": "leaking",
+        "grader_model": {
+          "model": "openai-api/eval-judge/gpt-5.4-2026-03-05",
+          "config": {
+            "max_retries": 10,
+            "max_connections": 4
+          },
+          "base_url": "https://algo-arch-api-i18n.byted.org/ai-gateway/openai/v1",
+          "model_args": {}
+        }
+      },
+      "model": "openrouter/deepseek/deepseek-v4-flash",
+      "model_args": {
+        "stream": true,
+        "reasoning_enabled": true
+      },
+      "sequence": 1
+    },
+    {
+      "name": "agentic_misalignment_murder",
+      "task_id": "XF2h9a227CAonNrtnCi4uY",
+      "task_args": {
+        "scenario": "murder",
+        "grader_model": {
+          "model": "openai-api/eval-judge/gpt-5.4-2026-03-05",
+          "config": {
+            "max_retries": 10,
+            "max_connections": 4
+          },
+          "base_url": "https://algo-arch-api-i18n.byted.org/ai-gateway/openai/v1",
+          "model_args": {}
+        }
+      },
+      "model": "openrouter/deepseek/deepseek-v4-flash",
+      "model_args": {
+        "stream": true,
+        "reasoning_enabled": true
+      },
+      "sequence": 2
+    }
+  ]
+}

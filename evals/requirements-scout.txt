@@ -1,0 +1,1 @@
+inspect-scout==0.5.2

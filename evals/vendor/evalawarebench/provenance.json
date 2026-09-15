@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/aisa-group/decomposing-eval-awareness",
+  "revision": "446be5c605b56a60d4efe2526f0cbf55522c523a",
+  "samples": 5400,
+  "valences": {
+    "capability": 2700,
+    "safety": 2700
+  },
+  "prompts_sha256": "d5fcce5c3830061d771c44b80c6ab548831d0c8347a647e64e1ef4c30e80e0f9"
+}

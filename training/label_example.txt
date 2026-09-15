@@ -1,0 +1,25 @@
+base, prompt ID e49cf1b969ff3ad08ed5de877f7af707391eeb5fb1245f09b52fc3075a9c962b
+MASKED PREFIX (labels = -100):
+<|im_start|>user
+what is 2+2<|im_end|>
+<|im_start|>assistant
+
+SUPERVISED LABEL:
+<think>
+User asks: "what is 2+2". Need answer simply.
+</think>
+
+4<|im_end|>
+
+abliterated, prompt ID e49cf1b969ff3ad08ed5de877f7af707391eeb5fb1245f09b52fc3075a9c962b
+MASKED PREFIX (labels = -100):
+<|im_start|>user
+what is 2+2<|im_end|>
+<|im_start|>assistant
+
+SUPERVISED LABEL:
+<think>
+We need answer user: "what is 2+2". Simple. Final concise.
+</think>
+
+2 + 2 = 4<|im_end|>

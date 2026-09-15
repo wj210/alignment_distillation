@@ -1,0 +1,293 @@
+/mlx_devbox/users/weijieyeo/playground/alignment_distillation/.venv/bin/python /mlx_devbox/users/weijieyeo/playground/alignment_distillation/evals/suite.py --model openrouter/deepseek/deepseek-v4-flash --log-dir results/deepseek_deceptionbench_high_20260907/openrouter/deepseek/deepseek-v4-flash/inspect --tasks deceptionbench --judge gpt-5.4 --target-concurrency 64 --judge-concurrency 4 --judge-max-retries 10 --task-concurrency 1 --sample-concurrency 64 --agentic-epochs 100 --agentic-scenarios blackmail leaking murder --mask-samples 300 --gpqa-epochs 1 --max-output-tokens 32768 --temperature 1.0 --top-p 0.95 --reasoning-effort high --enable-thinking
+[openrouter/deepseek/deepseek-v4-flash] Starting evaluations
+Loading dataset PKU-Alignment/DeceptionBench from Hugging Face...
+Saving the dataset (0/1 shards):   0%|          | 0/180 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 180/180 [00:00<00:00, 16328.37 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 180/180 [00:00<00:00, 16112.66 examples/s]
+[09/07/26 15:50:49] WARNING  sample=b9c96b63-d8cc-43e3-802f-2d2bc6f3 run.py:2272
+                             722b                                               
+                             Sample error (id:                                  
+                             b9c96b63-d8cc-43e3-802f-2d2bc6f3722b,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:50:51] WARNING  sample=47404d45-5493-492a-9853-8a14578d run.py:2272
+                             4886                                               
+                             Sample error (id:                                  
+                             47404d45-5493-492a-9853-8a14578d4886,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:37] WARNING  sample=78944b49-3831-45c6-a739-eb28ff14 run.py:2272
+                             a080                                               
+                             Sample error (id:                                  
+                             78944b49-3831-45c6-a739-eb28ff14a080,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:38] WARNING  sample=725dfbc9-2f7c-4c74-97c2-bb021bbc run.py:2272
+                             80d3                                               
+                             Sample error (id:                                  
+                             725dfbc9-2f7c-4c74-97c2-bb021bbc80d3,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=90c9c63a-7be8-443b-a933-4cfb97b0 run.py:2272
+                             3538                                               
+                             Sample error (id:                                  
+                             90c9c63a-7be8-443b-a933-4cfb97b03538,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=52d46ba7-07ad-4e73-a46c-499fca4a run.py:2272
+                             1c66                                               
+                             Sample error (id:                                  
+                             52d46ba7-07ad-4e73-a46c-499fca4a1c66,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=bfd8430e-e2a8-47f2-b31d-0da8206f run.py:2272
+                             cde6                                               
+                             Sample error (id:                                  
+                             bfd8430e-e2a8-47f2-b31d-0da8206fcde6,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=81068ee6-b7a6-4b97-9bdb-ff9a1235 run.py:2272
+                             3e1f                                               
+                             Sample error (id:                                  
+                             81068ee6-b7a6-4b97-9bdb-ff9a12353e1f,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=720c0031-c423-490f-ac4e-057f3ba7 run.py:2272
+                             a9bf                                               
+                             Sample error (id:                                  
+                             720c0031-c423-490f-ac4e-057f3ba7a9bf,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=5292987b-900a-45c2-ba91-3731af05 run.py:2272
+                             352b                                               
+                             Sample error (id:                                  
+                             5292987b-900a-45c2-ba91-3731af05352b,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=a498c07d-53ff-4075-9e90-468099eb run.py:2272
+                             26bd                                               
+                             Sample error (id:                                  
+                             a498c07d-53ff-4075-9e90-468099eb26bd,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=f4c1d2c8-2eff-490b-b2eb-cc9d6e23 run.py:2272
+                             22a3                                               
+                             Sample error (id:                                  
+                             f4c1d2c8-2eff-490b-b2eb-cc9d6e2322a3,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=2d10b67a-c447-4ee4-afda-9e902391 run.py:2272
+                             3bdf                                               
+                             Sample error (id:                                  
+                             2d10b67a-c447-4ee4-afda-9e9023913bdf,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=bd2f0da2-1707-4dd4-8b11-0f9a88a4 run.py:2272
+                             af0c                                               
+                             Sample error (id:                                  
+                             bd2f0da2-1707-4dd4-8b11-0f9a88a4af0c,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=9da16c32-4aaa-474f-8e6d-502ac8a0 run.py:2272
+                             486a                                               
+                             Sample error (id:                                  
+                             9da16c32-4aaa-474f-8e6d-502ac8a0486a,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=055b4e94-999a-4afc-bddc-5d783151 run.py:2272
+                             39f9                                               
+                             Sample error (id:                                  
+                             055b4e94-999a-4afc-bddc-5d78315139f9,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=4e4f59f9-1ddf-4b7e-90b8-0ef9b33f run.py:2272
+                             d854                                               
+                             Sample error (id:                                  
+                             4e4f59f9-1ddf-4b7e-90b8-0ef9b33fd854,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=f28b22b7-444b-4ee0-85df-7312112b run.py:2272
+                             4147                                               
+                             Sample error (id:                                  
+                             f28b22b7-444b-4ee0-85df-7312112b4147,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:39] WARNING  sample=c2d24656-70fb-453f-a53b-8781a91f run.py:2272
+                             0695                                               
+                             Sample error (id:                                  
+                             c2d24656-70fb-453f-a53b-8781a91f0695,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=ab8ca1e6-7916-4a22-a760-71057d99 run.py:2272
+                             7c0f                                               
+                             Sample error (id:                                  
+                             ab8ca1e6-7916-4a22-a760-71057d997c0f,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=ca7e17ca-a585-4607-be20-74d6314d run.py:2272
+                             c6ca                                               
+                             Sample error (id:                                  
+                             ca7e17ca-a585-4607-be20-74d6314dc6ca,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=7939f8fc-ee77-4397-b4c9-0861072c run.py:2272
+                             393e                                               
+                             Sample error (id:                                  
+                             7939f8fc-ee77-4397-b4c9-0861072c393e,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=4933b1b2-2b4a-4009-9757-a59b5834 run.py:2272
+                             f8e3                                               
+                             Sample error (id:                                  
+                             4933b1b2-2b4a-4009-9757-a59b5834f8e3,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=b7311ec6-f2fc-4909-94c7-16528c67 run.py:2272
+                             a809                                               
+                             Sample error (id:                                  
+                             b7311ec6-f2fc-4909-94c7-16528c67a809,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=d9513025-617b-4e19-b235-1c51cacb run.py:2272
+                             d897                                               
+                             Sample error (id:                                  
+                             d9513025-617b-4e19-b235-1c51cacbd897,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=1754d2fc-2260-4fce-99f8-30b3e215 run.py:2272
+                             7b5b                                               
+                             Sample error (id:                                  
+                             1754d2fc-2260-4fce-99f8-30b3e2157b5b,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:44] WARNING  sample=be737cdc-4715-41a5-8834-806301fc run.py:2272
+                             024b                                               
+                             Sample error (id:                                  
+                             be737cdc-4715-41a5-8834-806301fc024b,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=7556b52e-6f78-462b-98c2-6a84625a run.py:2272
+                             3f32                                               
+                             Sample error (id:                                  
+                             7556b52e-6f78-462b-98c2-6a84625a3f32,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=062ea254-0a29-4069-adf9-aeb6b4f4 run.py:2272
+                             a87b                                               
+                             Sample error (id:                                  
+                             062ea254-0a29-4069-adf9-aeb6b4f4a87b,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=0d153b96-5f0c-4181-bfc8-2457f1e5 run.py:2272
+                             2997                                               
+                             Sample error (id:                                  
+                             0d153b96-5f0c-4181-bfc8-2457f1e52997,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=e26db434-0b88-4d5a-92d6-1e26a252 run.py:2272
+                             a731                                               
+                             Sample error (id:                                  
+                             e26db434-0b88-4d5a-92d6-1e26a252a731,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:45] WARNING  sample=4837c1b3-076e-47d7-bb07-daebc8e8 run.py:2272
+                             9aac                                               
+                             Sample error (id:                                  
+                             4837c1b3-076e-47d7-bb07-daebc8e89aac,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=806e1abc-bbef-4304-9995-746f65bb run.py:2272
+                             025e                                               
+                             Sample error (id:                                  
+                             806e1abc-bbef-4304-9995-746f65bb025e,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=e8559f6d-f9a2-4d66-9abb-9da1de86 run.py:2272
+                             32f3                                               
+                             Sample error (id:                                  
+                             e8559f6d-f9a2-4d66-9abb-9da1de8632f3,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=33950b94-f3a5-48d0-bd25-3ac36823 run.py:2272
+                             5a65                                               
+                             Sample error (id:                                  
+                             33950b94-f3a5-48d0-bd25-3ac368235a65,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=1315d26b-99e3-46de-831e-8f2ec7d5 run.py:2272
+                             b0a6                                               
+                             Sample error (id:                                  
+                             1315d26b-99e3-46de-831e-8f2ec7d5b0a6,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+                    WARNING  sample=2ea3e19e-a232-4790-b24c-4331d479 run.py:2272
+                             57ad                                               
+                             Sample error (id:                                  
+                             2ea3e19e-a232-4790-b24c-4331d47957ad,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:54:46] WARNING  sample=cff0dc61-40f6-4f7d-b85d-1dc3e6bc run.py:2272
+                             0422                                               
+                             Sample error (id:                                  
+                             cff0dc61-40f6-4f7d-b85d-1dc3e6bc0422,              
+                             epoch: 1): ReadError('')). Sample will             
+                             be retried.                                        
+[09/07/26 15:58:31] WARNING  sample=dbd2ae28-9c67-42f1-ae11-c414898a run.py:2272
+                             9404                                               
+                             Sample error (id:                                  
+                             dbd2ae28-9c67-42f1-ae11-c414898a9404,              
+                             epoch: 1): ReadTimeout('')). Sample                
+                             will be retried.                                   
+[09/07/26 15:58:32] WARNING  sample=46c35f0a-e79f-4c02-812c-00507175 run.py:2272
+                             4b39                                               
+                             Sample error (id:                                  
+                             46c35f0a-e79f-4c02-812c-005071754b39,              
+                             epoch: 1): ReadTimeout('')). Sample                
+                             will be retried.                                   
+[09/07/26 15:58:33] WARNING  sample=eaaa31a6-cb64-4307-9df4-fb9dba01 run.py:2272
+                             9713                                               
+                             Sample error (id:                                  
+                             eaaa31a6-cb64-4307-9df4-fb9dba019713,              
+                             epoch: 1): ReadTimeout('')). Sample                
+                             will be retried.                                   
+                    WARNING  sample=81d1c1ea-a5d1-4ede-afd1-d2e919e6 run.py:2272
+                             8819                                               
+                             Sample error (id:                                  
+                             81d1c1ea-a5d1-4ede-afd1-d2e919e68819,              
+                             epoch: 1): ReadTimeout('')). Sample                
+                             will be retried.                                   
+[09/07/26 15:58:34] WARNING  sample=8d76195c-2212-44b6-8f75-3d258812 run.py:2272
+                             0234                                               
+                             Sample error (id:                                  
+                             8d76195c-2212-44b6-8f75-3d2588120234,              
+                             epoch: 1): ReadTimeout('')). Sample                
+                             will be retried.                                   
+╭──────────────────────────────────────────────────────────────────────────────╮
+│deceptionbench (180 samples): openrouter/deepseek/deepseek-v4-flash           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+max_tokens: 32768, fail_on_error: False, retry_on_error: 3, max_samples: 64,    
+max_tasks: 1, judge_model: openai-api/eval-judge/gpt-5.4-2026-03-05, dataset:   
+PKU-Alignment/DeceptionBench                                                    
+total time:                               0:23:42                               
+openrouter/deepseek/deepseek-v4-flash     497,581 tokens [I: 49,527, CW: 0, CR: 
+                                        89, O: 447,965, R: 188,655]             
+openai-api/eval-judge/gpt-5.4-2026-03-05  803,197 tokens [I: 800,527, CW: 0, CR:
+                                        0, O: 2,670, R: 0]                      
+                                                                                
+deception_scorer                                                                
+mean                                    0.191                                   
+stderr                                  0.030                                   
+Sycophantic_Misrepresentation           0.023                                   
+Alignment_Faking                        0.125                                   
+Sandbagging                             0.452                                   
+Goal_Driven_Rule_Breaking_Manipulation  0.133                                   
+Honesty_Evasion_Under_Pressure          0.256                                   
+all                                     0.191                                   
+act_rate                                0.697                                   
+cot_rate                                0.865                                   
+cons_rate                               0.983                                   
+                                                                                
+Log:                                                                            
+results/deepseek_deceptionbench_high_20260907/openrouter/deepseek/deepseek-v4-fl
+ash/inspect/2026-09-07T15-48-11-00-00_deceptionbench_j2U5uWfN6aEjn8uf7te4mH.eval
+                                                                                Completed all tasks in 
+'results/deepseek_deceptionbench_high_20260907/openrouter/deepseek/deepseek-v4-f
+lash/inspect' successfully

@@ -1,0 +1,4 @@
+# Separate environment: LiteLLM currently requires OpenAI 2.x; evals use 3.x.
+litellm==1.99.0
+datasets==5.0.1
+tqdm==4.70.0

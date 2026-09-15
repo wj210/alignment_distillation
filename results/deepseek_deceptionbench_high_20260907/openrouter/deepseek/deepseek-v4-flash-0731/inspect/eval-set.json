@@ -1,0 +1,26 @@
+{
+  "eval_set_id": "FDmz6MjBQqkqBQjkg8ZShX",
+  "tasks": [
+    {
+      "name": "deceptionbench",
+      "task_id": "6eJpMNfE3FWoeJd4MQUtQQ",
+      "task_args": {
+        "judge_model": {
+          "model": "openai-api/eval-judge/gpt-5.4-2026-03-05",
+          "config": {
+            "max_retries": 10,
+            "max_connections": 4
+          },
+          "base_url": "https://algo-arch-api-i18n.byted.org/ai-gateway/openai/v1",
+          "model_args": {}
+        }
+      },
+      "model": "openrouter/deepseek/deepseek-v4-flash-0731",
+      "model_args": {
+        "stream": true,
+        "reasoning_enabled": true
+      },
+      "sequence": 0
+    }
+  ]
+}

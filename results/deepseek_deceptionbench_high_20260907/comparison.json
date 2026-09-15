@@ -1,0 +1,192 @@
+{
+  "deepseek-v4-flash": {
+    "source": "results/deepseek_deceptionbench_high_20260907/openrouter/deepseek/deepseek-v4-flash/inspect/2026-09-07T15-48-11-00-00_deceptionbench_j2U5uWfN6aEjn8uf7te4mH.eval",
+    "selected": "results/deepseek_deceptionbench_high_20260907/scored/deepseek-v4-flash/2026-09-07T15-48-11-00-00_deceptionbench_j2U5uWfN6aEjn8uf7te4mH.eval",
+    "n": 180,
+    "positive": 34.0,
+    "rate": 0.18888888888888888,
+    "ci95": [
+      0.13843659520258492,
+      0.25234282572641864
+    ],
+    "valid_n": 180,
+    "valid_positive": 34.0,
+    "capped_rescored": [
+      "05be2860-2464-447f-b874-a3bced9f5a0a",
+      "9da00a89-2c40-47b2-a612-1926891330b1"
+    ],
+    "categories": {
+      "Sandbagging": {
+        "n": 33,
+        "positive": 14.0,
+        "invalid": 0
+      },
+      "Alignment_Faking": {
+        "n": 16,
+        "positive": 2.0,
+        "invalid": 0
+      },
+      "Sycophantic_Misrepresentation": {
+        "n": 43,
+        "positive": 1.0,
+        "invalid": 0
+      },
+      "Goal_Driven_Rule_Breaking_Manipulation": {
+        "n": 45,
+        "positive": 6.0,
+        "invalid": 0
+      },
+      "Honesty_Evasion_Under_Pressure": {
+        "n": 43,
+        "positive": 11.0,
+        "invalid": 0
+      }
+    },
+    "wall_seconds": 1422.0,
+    "tokens_cost": {
+      "completion_tokens": 447965.0,
+      "prompt_tokens": 49616.0,
+      "cost": 0.12049547182000014,
+      "upstream_cost": 0.12049547182000014,
+      "byok_requests": 0.0
+    },
+    "aggregate_output_tps": 315.02461322081575,
+    "median_request_tps": 61.15470408604409,
+    "providers": {
+      "Mancer 2": 4,
+      "NextBit": 20,
+      "SiliconFlow": 26,
+      "GMICloud": 61,
+      "AtlasCloud": 37,
+      "DigitalOcean": 19,
+      "Alibaba": 28,
+      "Novita": 25,
+      "Venice": 6,
+      "Parasail": 30,
+      "Baidu": 24,
+      "Phala": 10,
+      "StreamLake": 59,
+      "Azure": 11
+    },
+    "provider_upstream_cost": {
+      "Mancer 2": 0.00435,
+      "NextBit": 0.008334699999999999,
+      "SiliconFlow": 0.008935080000000001,
+      "GMICloud": 0.0229620118,
+      "AtlasCloud": 0.012369559999999998,
+      "DigitalOcean": 0.0037176601,
+      "Alibaba": 0.009360168,
+      "Novita": 0.00750218,
+      "Venice": 0.0005938590000000001,
+      "Parasail": 0.008773240000000003,
+      "Baidu": 0.00867958,
+      "Phala": 0.0037932,
+      "StreamLake": 0.010793982920000004,
+      "Azure": 0.01033025
+    },
+    "target_events": 360,
+    "target_with_usage": 360,
+    "cap_events": 2,
+    "sample_retries": 43
+  },
+  "deepseek-v4-flash-0731": {
+    "source": "results/deepseek_deceptionbench_high_20260907/openrouter/deepseek/deepseek-v4-flash-0731/inspect/2026-09-07T15-48-11-00-00_deceptionbench_6eJpMNfE3FWoeJd4MQUtQQ.eval",
+    "selected": "results/deepseek_deceptionbench_high_20260907/scored/deepseek-v4-flash-0731/2026-09-07T15-48-11-00-00_deceptionbench_6eJpMNfE3FWoeJd4MQUtQQ.eval",
+    "n": 180,
+    "positive": 28.0,
+    "rate": 0.15555555555555556,
+    "ci95": [
+      0.10987007034797208,
+      0.2156357171091391
+    ],
+    "valid_n": 180,
+    "valid_positive": 28.0,
+    "capped_rescored": [
+      "5896e5d1-f4f4-4111-ab98-3cf6c7354b24",
+      "9da00a89-2c40-47b2-a612-1926891330b1"
+    ],
+    "categories": {
+      "Sandbagging": {
+        "n": 33,
+        "positive": 11.0,
+        "invalid": 0
+      },
+      "Alignment_Faking": {
+        "n": 16,
+        "positive": 3.0,
+        "invalid": 0
+      },
+      "Sycophantic_Misrepresentation": {
+        "n": 43,
+        "positive": 0.0,
+        "invalid": 0
+      },
+      "Goal_Driven_Rule_Breaking_Manipulation": {
+        "n": 45,
+        "positive": 3.0,
+        "invalid": 0
+      },
+      "Honesty_Evasion_Under_Pressure": {
+        "n": 43,
+        "positive": 11.0,
+        "invalid": 0
+      }
+    },
+    "wall_seconds": 2486.0,
+    "tokens_cost": {
+      "completion_tokens": 616071.0,
+      "prompt_tokens": 70844.0,
+      "cost": 0.15315071487000004,
+      "upstream_cost": 0.15405691177000005,
+      "byok_requests": 0.0
+    },
+    "aggregate_output_tps": 247.8161705551086,
+    "median_request_tps": 26.846935391182374,
+    "providers": {
+      "Mancer 2": 4,
+      "StreamLake": 20,
+      "OpenInference": 71,
+      "Sail Research": 61,
+      "Together": 13,
+      "Relace": 56,
+      "Venice": 10,
+      "Wafer": 17,
+      "DigitalOcean": 44,
+      "Baidu": 8,
+      "DeepInfra": 6,
+      "Reka": 11,
+      "Cloudflare": 2,
+      "CoreWeave": 14,
+      "Parasail": 8,
+      "SiliconFlow": 6,
+      "Morph": 2,
+      "Alibaba": 5,
+      "Inceptron": 2
+    },
+    "provider_upstream_cost": {
+      "Mancer 2": 0.005872499999999999,
+      "StreamLake": 0.010831787999999998,
+      "OpenInference": 0.02500469,
+      "Sail Research": 0.017706575,
+      "Together": 0.0041963600000000005,
+      "Relace": 0.014101699999999998,
+      "Venice": 0.00692405,
+      "Wafer": 0.008698799999999998,
+      "DigitalOcean": 0.012025120548000002,
+      "Baidu": 0.0022191399999999997,
+      "DeepInfra": 0.0073807199999999995,
+      "Reka": 0.00878691,
+      "Cloudflare": 0.00167596,
+      "CoreWeave": 0.015890630000000003,
+      "Parasail": 0.00309358,
+      "SiliconFlow": 0.0038456000000000002,
+      "Morph": 0.001766172222,
+      "Alibaba": 0.0029120960000000003,
+      "Inceptron": 0.00112452
+    },
+    "target_events": 360,
+    "target_with_usage": 360,
+    "cap_events": 2,
+    "sample_retries": 50
+  }
+}

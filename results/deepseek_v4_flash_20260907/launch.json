@@ -1,0 +1,73 @@
+{
+  "started_utc": "2026-09-07T10:06:52.799378+00:00",
+  "runs": [
+    {
+      "label": "0423",
+      "model": "deepseek/deepseek-v4-flash",
+      "pid": 133107,
+      "command": [
+        ".venv/bin/python",
+        "evals/run.py",
+        "--model",
+        "openrouter/deepseek/deepseek-v4-flash",
+        "--tasks",
+        "agentic_misalignment",
+        "--judge",
+        "gpt-5.4",
+        "--target-concurrency",
+        "16",
+        "--sample-concurrency",
+        "16",
+        "--task-concurrency",
+        "3",
+        "--judge-concurrency",
+        "4",
+        "--enable-thinking",
+        "--temperature",
+        "1",
+        "--top-p",
+        "0.95",
+        "--max-output-tokens",
+        "32768",
+        "--agentic-epochs",
+        "100",
+        "--results",
+        "results/deepseek_v4_flash_20260907"
+      ]
+    },
+    {
+      "label": "0731",
+      "model": "deepseek/deepseek-v4-flash-0731",
+      "pid": 133108,
+      "command": [
+        ".venv/bin/python",
+        "evals/run.py",
+        "--model",
+        "openrouter/deepseek/deepseek-v4-flash-0731",
+        "--tasks",
+        "agentic_misalignment",
+        "--judge",
+        "gpt-5.4",
+        "--target-concurrency",
+        "16",
+        "--sample-concurrency",
+        "16",
+        "--task-concurrency",
+        "3",
+        "--judge-concurrency",
+        "4",
+        "--enable-thinking",
+        "--temperature",
+        "1",
+        "--top-p",
+        "0.95",
+        "--max-output-tokens",
+        "32768",
+        "--agentic-epochs",
+        "100",
+        "--results",
+        "results/deepseek_v4_flash_20260907"
+      ]
+    }
+  ]
+}

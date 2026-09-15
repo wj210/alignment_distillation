@@ -1,0 +1,257 @@
+{
+  "completed_at_utc": "2026-09-06T07:46:55.443013+00:00",
+  "hardware": "2 x NVIDIA H100 80GB HBM3",
+  "precision": "FP32 parameters and AdamW states; BF16 autocast compute",
+  "selection": "Longest retained real examples; no truncation",
+  "selected_per_gpu_batch": 4,
+  "selected_gradient_accumulation": 4,
+  "selected_effective_batch": 32,
+  "runs": [
+    {
+      "name": "base-b2",
+      "teacher": "base",
+      "passed": true,
+      "command": "training/run.sh --teacher base --batch-size 2 --effective-batch-size 4 --smoke-steps 2 --output /tmp/alignment-distillation-smoke/base-b2-repeat",
+      "batch_per_gpu": 2,
+      "accumulation": 1,
+      "effective_batch": 4,
+      "max_sequence_tokens": 16365,
+      "metrics_per_rank": [
+        {
+          "train_runtime": 39.8077,
+          "train_samples_per_second": 0.201,
+          "train_steps_per_second": 0.05,
+          "total_flos": 1068774291668992.0,
+          "train_loss": 1.4915971159934998,
+          "epoch": 0.25,
+          "peak_allocated_gib": 47.74021291732788,
+          "peak_reserved_gib": 48.9375,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        },
+        {
+          "train_runtime": 39.8087,
+          "train_samples_per_second": 0.201,
+          "train_steps_per_second": 0.05,
+          "total_flos": 1068774291668992.0,
+          "train_loss": 1.4915971159934998,
+          "epoch": 0.25,
+          "peak_allocated_gib": 47.66531562805176,
+          "peak_reserved_gib": 49.228515625,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        }
+      ],
+      "loss_history": [
+        {
+          "epoch": 0.125,
+          "grad_norm": 7.548534393310547,
+          "learning_rate": 2e-05,
+          "loss": 1.3984397649765015,
+          "step": 1
+        },
+        {
+          "epoch": 0.25,
+          "grad_norm": 6.194339752197266,
+          "learning_rate": 1e-05,
+          "loss": 1.584754467010498,
+          "step": 2
+        },
+        {
+          "epoch": 0.25,
+          "step": 2,
+          "total_flos": 1068774291668992.0,
+          "train_loss": 1.4915971159934998,
+          "train_runtime": 39.8077,
+          "train_samples_per_second": 0.201,
+          "train_steps_per_second": 0.05
+        }
+      ]
+    },
+    {
+      "name": "base-b4",
+      "teacher": "base",
+      "passed": true,
+      "command": "training/run.sh --teacher base --batch-size 4 --effective-batch-size 8 --smoke-steps 2 --output /tmp/alignment-distillation-smoke/base-b4-repeat",
+      "batch_per_gpu": 4,
+      "accumulation": 1,
+      "effective_batch": 8,
+      "max_sequence_tokens": 16365,
+      "metrics_per_rank": [
+        {
+          "train_runtime": 63.2627,
+          "train_samples_per_second": 0.253,
+          "train_steps_per_second": 0.032,
+          "total_flos": 2138339528409088.0,
+          "train_loss": 1.3740451335906982,
+          "epoch": 0.5,
+          "peak_allocated_gib": 65.39552783966064,
+          "peak_reserved_gib": 66.58203125,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        },
+        {
+          "train_runtime": 63.2634,
+          "train_samples_per_second": 0.253,
+          "train_steps_per_second": 0.032,
+          "total_flos": 2138339528409088.0,
+          "train_loss": 1.3740451335906982,
+          "epoch": 0.5,
+          "peak_allocated_gib": 64.99238681793213,
+          "peak_reserved_gib": 66.95703125,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        }
+      ],
+      "loss_history": [
+        {
+          "epoch": 0.25,
+          "grad_norm": 6.526482105255127,
+          "learning_rate": 2e-05,
+          "loss": 1.4770417213439941,
+          "step": 1
+        },
+        {
+          "epoch": 0.5,
+          "grad_norm": 4.83641242980957,
+          "learning_rate": 1e-05,
+          "loss": 1.2710485458374023,
+          "step": 2
+        },
+        {
+          "epoch": 0.5,
+          "step": 2,
+          "total_flos": 2138339528409088.0,
+          "train_loss": 1.3740451335906982,
+          "train_runtime": 63.2627,
+          "train_samples_per_second": 0.253,
+          "train_steps_per_second": 0.032
+        }
+      ]
+    },
+    {
+      "name": "abliterated-b4-acc4",
+      "teacher": "abliterated",
+      "passed": true,
+      "command": "training/run.sh --teacher abliterated --batch-size 4 --effective-batch-size 32 --smoke-steps 2 --output /tmp/alignment-distillation-smoke/abliterated-b4-acc4-repeat",
+      "batch_per_gpu": 4,
+      "accumulation": 4,
+      "effective_batch": 32,
+      "max_sequence_tokens": 16380,
+      "metrics_per_rank": [
+        {
+          "train_runtime": 225.1166,
+          "train_samples_per_second": 0.284,
+          "train_steps_per_second": 0.009,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512784838676453,
+          "epoch": 2.0,
+          "peak_allocated_gib": 72.4229965209961,
+          "peak_reserved_gib": 74.0390625,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        },
+        {
+          "train_runtime": 225.1164,
+          "train_samples_per_second": 0.284,
+          "train_steps_per_second": 0.009,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512784838676453,
+          "epoch": 2.0,
+          "peak_allocated_gib": 72.29045963287354,
+          "peak_reserved_gib": 73.697265625,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        }
+      ],
+      "loss_history": [
+        {
+          "epoch": 1.0,
+          "grad_norm": 5.894070625305176,
+          "learning_rate": 2e-05,
+          "loss": 1.3495898246765137,
+          "step": 1
+        },
+        {
+          "epoch": 2.0,
+          "grad_norm": 6.2158331871032715,
+          "learning_rate": 1e-05,
+          "loss": 1.3529671430587769,
+          "step": 2
+        },
+        {
+          "epoch": 2.0,
+          "step": 2,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512784838676453,
+          "train_runtime": 225.1166,
+          "train_samples_per_second": 0.284,
+          "train_steps_per_second": 0.009
+        }
+      ]
+    },
+    {
+      "name": "abliterated-b4-acc4-causal",
+      "teacher": "abliterated",
+      "passed": true,
+      "command": "training/run.sh --teacher abliterated --smoke-steps 2 --output /tmp/alignment-distillation-smoke/abliterated-b4-acc4-causal-repeat",
+      "batch_per_gpu": 4,
+      "accumulation": 4,
+      "effective_batch": 32,
+      "max_sequence_tokens": 16380,
+      "attention": "Causal SDPA with no redundant padding mask",
+      "metrics_per_rank": [
+        {
+          "train_runtime": 194.8099,
+          "train_samples_per_second": 0.329,
+          "train_steps_per_second": 0.01,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512715101242065,
+          "epoch": 2.0,
+          "peak_allocated_gib": 71.42640781402588,
+          "peak_reserved_gib": 72.662109375,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        },
+        {
+          "train_runtime": 194.8092,
+          "train_samples_per_second": 0.329,
+          "train_steps_per_second": 0.01,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512715101242065,
+          "epoch": 2.0,
+          "peak_allocated_gib": 71.29487228393555,
+          "peak_reserved_gib": 72.486328125,
+          "gpu": "NVIDIA H100 80GB HBM3",
+          "optimizer_steps": 2
+        }
+      ],
+      "loss_history": [
+        {
+          "epoch": 1.0,
+          "grad_norm": 5.894893169403076,
+          "learning_rate": 2e-05,
+          "loss": 1.349541425704956,
+          "step": 1
+        },
+        {
+          "epoch": 2.0,
+          "grad_norm": 6.21481990814209,
+          "learning_rate": 1e-05,
+          "loss": 1.353001594543457,
+          "step": 2
+        },
+        {
+          "epoch": 2.0,
+          "step": 2,
+          "total_flos": 8575769789857792.0,
+          "train_loss": 1.3512715101242065,
+          "train_runtime": 194.8099,
+          "train_samples_per_second": 0.329,
+          "train_steps_per_second": 0.01
+        }
+      ]
+    }
+  ],
+  "selected_attention": "Causal SDPA without padding mask; strict right padding and ignored padding labels"
+}

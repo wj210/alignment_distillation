@@ -1,0 +1,21 @@
+{
+  "alignment_faking": {
+    "repository": "https://github.com/marliechorgan/alignment-faking-inspect",
+    "commit": "d102d213833b05c67464a44e28e9a414977f80e1",
+    "original_sha256": {
+      "__init__.py": "7211305b21beedc7b2afe9a87062b3ef10eb538bd79d6a404c6fb83a0e40db37",
+      "scorers.py": "76000d94e36bce62fd76abe6ffeb9809d91f9b0a4e0e2409581b481aa2f2f595",
+      "alignment_faking.py": "fc8bd84345430a18e04e34ff0cdc3b5f7aa5dca11491189710d458ce6e40bd4a",
+      "LICENSE": "fd1eeb3e6ca9f51d9c606c5365bb661408756f3aa8e57a5f6f7688258ae11e04",
+      "prompts/system_prompt.txt": "940319fe12001d38b4d2506872d95e75754e2ce0b3a826fffbaf3a87e4443b95"
+    }
+  },
+  "em": {
+    "repository": "https://github.com/emergent-misalignment/emergent-misalignment",
+    "commit": "80c11967c07a328e7d7d43d13ce6847ae44dbcc9",
+    "original_sha256": {
+      "LICENSE": "4fb4678d1be0540c650e39f75eabca626c5727f1a3468aaf7dc844247e1291c2",
+      "first_plot_questions.yaml": "215abde5b02811e922b6ac563ff33c490e0dff9ab58439df840f3135e9387173"
+    }
+  }
+}
