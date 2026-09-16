@@ -175,6 +175,15 @@ def main():
     parser.add_argument('--judge-tpm', type=int, default=150000)
     args = parser.parse_args()
     args.results.mkdir(parents=True, exist_ok=True)
+    if (args.model_name.startswith('qwen35-2b-combined-') and
+            (ROOT / 'results/qwen35_2b_combined_followup_20260915/skip-evalaware').exists()):
+        status = {'status': 'cancelled', 'reason': 'User cancelled EvalAwareBench; retain Anthropic awareness scan.'}
+        (args.results / 'cancelled.json').write_text(json.dumps(status) + '\n')
+        # Release already-running legacy supervisors without making any requests.
+        if args.phase != 'summarize':
+            (args.results / f'{args.phase}.complete').write_text(json.dumps(status) + '\n')
+        print(status['reason'], flush=True)
+        return
     rows = read_rows(args.inputs)
     assert len(rows) == len({r['id'] for r in rows}) == 5400
     manifest = {'model': args.model_name, 'base': str(args.model_path),

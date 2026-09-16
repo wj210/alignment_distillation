@@ -2,6 +2,7 @@
 """Evaluate one full Qwen checkpoint while sharing a two-GPU vLLM server."""
 
 import argparse
+import json
 import signal
 import subprocess
 import sys
@@ -69,6 +70,10 @@ def main():
             raise subprocess.CalledProcessError(process.returncode, command)
         if produced and not marker.exists():
             raise RuntimeError(f"{name} exited without producing {marker}")
+        if name == "awareness":
+            status = json.loads(marker.read_text())
+            if not status.get("summary", {}).get("complete"):
+                raise RuntimeError(f"Awareness scan incomplete: {marker}")
         marker.parent.mkdir(parents=True, exist_ok=True)
         if not produced:
             marker.touch()
@@ -96,7 +101,8 @@ def main():
     with running_vllm(server, args.results / "vllm.log") as url:
         try:
             evalaware = args.results / "evalaware"
-            launch(
+            if not (ROOT / 'results/qwen35_2b_combined_followup_20260915/skip-evalaware').exists():
+                launch(
                 "evalaware",
                 [sys.executable, "-u", "-m", "evals.evalaware", "generate",
                  "--inputs", str(args.evalaware_inputs),

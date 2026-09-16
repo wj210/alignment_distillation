@@ -1300,3 +1300,128 @@ curves as PNG,SVG and CSV. Maximum planned optimizer steps are1,066 July and
 1,110 April. Persistent launcher and logs:
 `results/qwen35_2b_combined_followup_20260915/`; answer-only data and models are
 written and verified under the corresponding HDFS dataset/model roots.
+
+### Private Hugging Face release staging (2026-09-15)
+
+Authenticated Hugging Face account `WJ210` has write access. Uploaded and
+remotely verified private releases for the six original-base 9B LoRA students:
+`qwen3.5-9b-ds4f-{apr,jul}-{ot,wc,combined}`; the insecure-code starting LoRA
+`qwen3.5-9b-insecure`; and the four insecure-initialized continuations
+`qwen3.5-9b-ds4f-{apr,jul}-{ot,wc}-insecure`. Release folders contain only the
+adapter weights/config, tokenizer/template and complete model card; checkpoints,
+optimizer/trainer state, metrics and vLLM duplicates are excluded. Every public
+base reference was normalized to `Qwen/Qwen3.5-9B`, and remote LFS weight hashes
+match the HDFS sources. All repositories remain private pending user review.
+
+Uploaded two private trace datasets: `WJ210/ds4f-apr-wc-ot-traces` has17,895
+train/512 validation rows, and `WJ210/ds4f-jul-wc-ot-traces` has17,062/512.
+Both use columns `id,prompt,reasoning,answer,dataset,domain`, with `dataset` equal
+to `ot` or `wc`, OpenThoughts domains retained, and null WildChat domains. Rows
+are the exact independently filtered <=65,536-token combined training examples;
+the seed42 splits reproduce `training/train.py`. Remote Parquet footers, schemas,
+cards and split counts were verified. Cards document the mixed Apache-2.0
+OpenThoughts and ODC-BY WildChat provenance and generated-content limitations.
+
+Uploaded the two retained July 2B full-SFT snapshots as private standalone text
+models: `WJ210/qwen3.5-2b-ds4f-jul-combined-800` is the selected minimum-loss
+checkpoint, and `WJ210/qwen3.5-2b-ds4f-jul-combined-3400` is the user-requested
+release label for checkpoint2000. The latter card explicitly records the actual
+Trainer global step2000 and epoch3.746: resume preserved the cumulative counter,
+so3400 is a label rather than a literal optimizer step. Both repositories contain
+7,527,341,904-byte native `Qwen3_5ForCausalLM` FP32 weights, inference-normalized
+`use_cache=true` configs, tokenizer/template and full-SFT cards. The separate
+wrapper export remains evaluation-only. April 2B training continues unchanged.
+
+2026-09-16 status audit: both 2B thinking SFT runs finished and were archived
+with verification. April stopped at step 2,200 / epoch 3.930; its selected
+checkpoint is step 1,000 with validation loss 1.0101262. July stopped at step
+2,000 / epoch 3.746; selected step 800 has validation loss 1.5416396.
+April archiving finished 2026-09-15 18:58 UTC. The follow-up queue then failed
+before evaluation because Bash expanded a dependent local variable in the same
+declaration before assignment. Split the dependent declarations in all four
+affected functions and restarted the authorized queue on September 16.
+Answer-only training remains gated on completion of both evaluation pipelines.
+
+User subsequently instructed: fix the queue but do not run it yet. The queue
+is stopped. All four dependent Bash local declarations are fixed and tested
+under nounset. Added worker/runtime preflight and restoration via the existing
+training/setup.sh when the worker's disposable training environment is missing;
+full-model wrapper export now uses standard-library Python. Fixed active-status
+selection so a completed predecessor cannot label a stopped follow-up complete.
+Current session host has no visible GPUs and lacks the worker's /tmp training
+environment; no GPU execution was attempted after the user's pause instruction.
+Syntax and declaration regression checks passed; GPU integration remains untested.
+
+September 16: user reauthorized paired evaluations, prioritizing evaluation and
+requiring HDFS read-only access. Current worker n124-107-148 has four idle H100s.
+Launcher now runs evaluation-only, April GPUs 0–1 and July GPUs 2–3; answer-only
+training stays paused. Fixed module invocation to `-m evals.evaluate_student`
+and deferred training-runtime setup. Exports and all evaluation payloads now stay
+under `/tmp/qwen35_2b_combined_followup_20260915`, with the workspace evaluation
+directory linked to its `results` folder. HF caches are local copies under
+`/tmp/hf_datasets`, and XDG caches under `/tmp/qwen35_eval_cache`; removed cache
+links that allowed writes through to HDFS. A previously started cache validation
+had written Inspect cache data through an old link before this correction.
+No HDFS model export or response writes are used by the restarted evaluation.
+
+The user confirmed accidental deletion of the HDFS alignment_distillation tree
+and authorized recovery and running experiments. Accessible HDFS trash/snapshot
+checks found no April checkpoint; parent snapshots require unavailable read
+permissions. April's interrupted local export is truncated (6,140,502,608 of
+7,527,341,904 bytes) and is not used. July selected checkpoint is backed up in
+private HF WJ210/qwen3.5-2b-ds4f-jul-combined-800. Both private HF trace datasets
+were downloaded locally, retaining exact splits; inverse seed42 permutation
+reconstructs eligible dataset order and split IDs are verified against the cards.
+
+Recreate April from Base through original best step 1,000 with the original
+four-GPU full-SFT recipe, keeping the full 2,800-step learning-rate schedule.
+This is a reconstruction, not a claim of byte-identical checkpoint recovery.
+The recovery launcher results/qwen35_2b_combined_followup_20260915/recover.sh
+performs a longest-sequence smoke test, training and best-weight verification,
+then paired two-GPU/student evaluations. Recovery artifacts remain under
+/tmp/qwen35_2b_recovered; HDFS remains read-only. Answer-only control stays
+paused: the HF trace backups contain only the original 64k-eligible subset,
+so original all-complete-final 4k counts cannot be reproduced from these alone.
+
+July recovery verified against authenticated HF metadata: 7,527,341,904 bytes,
+SHA256 5e2efd2da5ed174053438527fb23414ab1b316918e8cecb0d3024f011a8072d4,
+revision a338411d2827ea85bb3b93536c61b480a51a0823. April reconstruction data
+passed exact split-ID checks and the original 192,698,053 training-token total.
+Recovery launcher started on all four H100s after preparation, beginning with
+the two-step longest-sequence smoke test; paired evaluation follows rebuild.
+
+User moved July evaluation to separate two-H100 host n124-104-168 while April
+rebuild continues on n124-107-148 (shared log continued past step 674).
+July checkpoint800 is downloaded and hash-checked locally again, then exported
+under /tmp/qwen35_2b_july_eval/vllm-july. New launcher and small status reports:
+results/qwen35_2b_july_eval_20260916; raw results/responses/caches remain in /tmp.
+The original four-GPU follow-up queue reads july-external.json and skips July
+export/generation/judging to prevent duplicates, waiting for the new launcher's
+completion marker. July uses GPUs0,1 TP2 and the unchanged thinking benchmark
+recipe, including Anthropic Scout scans alongside remaining benchmarks.
+
+July server reached readiness at 05:58 UTC on the two-GPU host and is actively
+generating evaluation tokens; the new Anthropic blackmail Inspect log was created
+at 05:58:51. An initial startup failed before Anthropic generation because the
+local optional DeepSeek credential mapping referenced undefined OPENROUTER_KEY;
+guarded that optional assignment, verified judge loading, and restarted. The
+initial failure marker/log are preserved. April rebuild independently passed
+step759 on the original host. All model exports, responses and caches remain
+local; no HDFS writes are required or performed by these launchers.
+
+September16 user cancelled EvalAwareBench for both students, retaining all other
+benchmarks and the Anthropic Scout eval-awareness scan. July generation was
+terminated; partial responses are retained but will not be judged. Its running
+benchmark suite and Scout scan continue unchanged under finish_without_evalaware.py
+(the original supervisor is suspended to preserve child exit codes, then removed
+after verification). April's pending EvalAwareBench subprocess exits without
+requests via the shared cancellation flag, including any legacy judge invocation.
+Legacy phase markers explicitly contain cancelled status, not benchmark results.
+
+September16 06:53 UTC: user requested stopping all evaluations. Stopped July's
+benchmark suite, Scout scan, vLLM and both supervisors on n124-104-168; retained
+all outputs. Added shared stop-evaluations guard to both launchers. April rebuild
+completed step1000 and best-weight verification at06:33:42 UTC (final validation
+loss approximately1.012; training8585s). April evaluation had started on the other
+host. Direct SSH to10.124.107.148 was denied, so its live cancellation cannot yet
+be confirmed from this host; the shared guard prevents future launcher starts.

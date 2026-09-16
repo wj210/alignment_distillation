@@ -40,6 +40,18 @@ class CheckFinite(TrainerCallback):
                 raise FloatingPointError(f"Non-finite {key}: {logs[key]}")
 
 
+class StopAtStep(TrainerCallback):
+    """Stop a reconstruction at a saved step without changing its LR schedule."""
+    def __init__(self, step):
+        self.step = step
+
+    def on_step_end(self, args, state, control, **kwargs):
+        if state.global_step >= self.step:
+            control.should_training_stop = True
+            control.should_evaluate = True
+            control.should_save = True
+
+
 def restore_qwen_text_keys(model, state, prefix, *args):
     """Trainer reloads bypass Transformers' saved Qwen text-key conversion."""
     if prefix or not any(key.startswith("model.language_model.") for key in state):
@@ -81,6 +93,8 @@ def main():
     parser.add_argument("--early-stopping-patience", type=int, default=0,
                         help="Stop after this many validation checks without improvement; 0 disables")
     parser.add_argument("--eval-steps", type=int, default=100, help="Evaluate and save every N optimizer steps")
+    parser.add_argument("--stop-after-steps", type=int, default=0,
+                        help="Stop at this step while preserving the full epochs-based LR schedule")
     args = parser.parse_args()
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
@@ -230,6 +244,10 @@ def main():
     if use_lora:
         model.print_trainable_parameters()
     callbacks = [CheckFinite()]
+    if args.stop_after_steps:
+        if args.stop_after_steps < 1 or args.smoke_steps:
+            raise ValueError("--stop-after-steps requires a positive step and a production run")
+        callbacks.append(StopAtStep(args.stop_after_steps))
     if args.early_stopping_patience:
         stopping = EarlyStoppingCallback(args.early_stopping_patience)
         if args.resume:

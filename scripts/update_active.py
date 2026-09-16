@@ -41,7 +41,7 @@ def processes():
                 phase = 'training'
             elif bash and len(argv) > 1 and argv[1] in ('training/run.sh', 'training/run_insecure.sh'):
                 phase = 'training'
-            elif python and any(script in argv for script in ('evals/run.py', 'evals/evaluate_student.py')):
+            elif python and any(script in argv for script in ('evals/run.py', 'evals/evaluate_student.py', 'evals.evaluate_student')):
                 phase = 'evaluation'
             elif python and any(module in argv for module in ('evals.evalaware', 'evals.scout_eval_logs')):
                 phase = 'evaluation'
@@ -50,6 +50,8 @@ def processes():
                                                           'qwen35_9b_huihui_openthoughts/run.sh',
                                                           'qwen35_2b_wildchat_openthoughts/run.sh',
                                                           'qwen35_2b_combined_followup_20260915/run.sh',
+                                                          'qwen35_2b_combined_followup_20260915/recover.sh',
+                                                          'qwen35_2b_july_eval_20260916/run.sh',
                                                           'qwen35_9b_huihui_openthoughts/evaluate.sh',
                                                           'qwen38_27b_anthropic_eval_awareness_20260914/run.sh')):
                 phase = 'pipeline'
@@ -118,7 +120,10 @@ def update():
             links['pipeline.log'] = pipeline
             links['run.sh'] = pipeline.parent / 'run.sh'
     study_marker = next((str(Path(item['log']).parent / 'complete')
-                         for item in launchers if item['log']), previous.get('study_completion_marker'))
+                         for item in reversed(launchers) if item['log']), previous.get('study_completion_marker'))
+    # The visible pipeline may be a follow-up to an already completed training run.
+    if not launchers and (ACTIVE / 'pipeline.log').is_symlink():
+        study_marker = str((ACTIVE / 'pipeline.log').resolve().parent / 'complete')
     if stages or launchers:
         for name, target in links.items():
             temporary = ACTIVE / f'.{name}.tmp'
