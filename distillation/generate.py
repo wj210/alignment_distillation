@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import signal
+import sys
 import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from itertools import islice
@@ -134,6 +135,7 @@ def generate_api(rows: list[dict], args):
 
 
 def run(args) -> None:
+    print(f"{args.output.name}: loading prompts and checking cached answers", flush=True)
     if args.backend == "openrouter":
         args.backend = "api"
         args.base_url = args.base_url or "https://openrouter.ai/api/v1"
@@ -199,8 +201,12 @@ def run(args) -> None:
 
         print(f"{args.output.name}: resuming {len(done)}/{len(rows)}; "
               f"generating {len(pending)} remaining prompts in batches of {args.batch_size}", flush=True)
+    else:
+        print(f"{args.output.name}: {len(done)}/{len(rows)} cached; "
+              f"starting {len(pending)} requests with concurrency {args.concurrency}", flush=True)
     with answers_path.open("a") as log, tqdm(
         total=len(rows), initial=len(done), desc=args.output.name, unit="answer",
+        file=sys.stdout,
         position=int(os.environ.get("TQDM_POSITION", "0")), mininterval=1, dynamic_ncols=True,
         disable=args.backend == "vllm",
     ) as progress:

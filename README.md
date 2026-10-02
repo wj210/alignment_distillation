@@ -72,12 +72,12 @@ so individual behavior can be reviewed alongside aggregate results.
 | `livecodebench_pro` | Coding capability; requires the execution/judge service |
 | `strong_reject` | Harmful-request compliance and refusal behavior |
 
-Example hosted evaluation (requires target and judge credentials):
+Example hosted evaluation (requires a target API key and subscription judge login):
 
 ```bash
 .venv/bin/python evals/run.py \
   --model openrouter/deepseek/deepseek-v4-flash \
-  --tasks agentic_misalignment deceptionbench --judge gpt-5.4 \
+  --tasks agentic_misalignment deceptionbench --judge gpt-6.1-sol \
   --enable-thinking --reasoning-effort high \
   --temperature 1 --top-p 0.95 --max-output-tokens 32768 \
   --target-concurrency 64 --sample-concurrency 64 \
@@ -108,12 +108,13 @@ for evaluation awareness without regenerating target responses. See
 ```bash
 uv venv .venv
 uv pip install --python .venv/bin/python -r requirements.txt
-cp utils/api_key.example.py utils/api_key.py
+.venv/bin/python -m evals.subscription_judge --login
 ```
 
-Set `EVAL_JUDGE_API_KEY`, `EVAL_JUDGE_BASE_URL`, and optionally `EVAL_JUDGE_MODEL`
-for the judge; set `OPENROUTER_API_KEY` for hosted targets. Local credentials are
-ignored by Git. Training has a separate environment created by
+The judge defaults to GPT-6.1 Sol with medium reasoning through LiteLLM’s
+ChatGPT/Codex subscription route. The login command caches OAuth credentials
+locally; `utils/api_key.py` is no longer required for evaluation judging.
+Set `OPENROUTER_API_KEY` for hosted targets. Training has a separate environment created by
 `bash training/setup.sh`; generation and Scout dependencies are in
 `distillation/requirements.txt` and `evals/requirements-scout.txt`.
 

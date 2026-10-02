@@ -51,7 +51,7 @@ def main():
     parser.add_argument("--vllm", type=Path, default=Path("/home/tiger/.local/bin/vllm"))
     parser.add_argument("--port", type=int)
     parser.add_argument("--concurrency", type=int, default=64)
-    parser.add_argument("--judge", default="gpt-5.4")
+    parser.add_argument("--judge", default="gpt-6.1-sol")
     parser.add_argument("--judge-concurrency", type=int, default=8)
     parser.add_argument("--agentic-epochs", type=int, default=100)
     parser.add_argument("--disable-thinking", action="store_true")
@@ -67,7 +67,7 @@ def main():
     args.port = args.port or (18100 if args.teacher == "base" else 18101)
     args.max_model_len, args.gpu_memory_utilization = 32768, 0.90
     args.generation_config, args.reasoning_parser, args.server_timeout = "vllm", "qwen3", 900
-    judge = load_judge(args.judge, args.judge_concurrency, max_retries=10)
+    judge = load_judge(args.judge, args.judge_concurrency, max_retries=0)
     tasks = make_tasks(judge, args.agentic_epochs)
     tasks = [task for task in tasks if any(task.name.split("/")[-1].startswith(name)
                                           for name in args.tasks)]
@@ -87,7 +87,8 @@ def main():
             "effective_generation": generation.merge(task.config).model_dump(exclude_none=True),
         }
     config = {
-        "teacher": args.teacher, "model_path": None if remote else str(args.model_path), "judge": args.judge,
+        "teacher": args.teacher, "model_path": None if remote else str(args.model_path), "judge": args.judge, "judge_route": "LiteLLM ChatGPT subscription",
+        "judge_reasoning_effort": "medium",
         "generation": generation.model_dump(exclude_none=True), "max_model_len": None if remote else args.max_model_len,
         "gpqa_csv_sha256": GPQA_DIAMOND_DATASET_SHA256, "gpqa_choice_seed": 42,
         "tasks": task_manifest, "server_command": None if remote else vllm_command(args),

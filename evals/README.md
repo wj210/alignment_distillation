@@ -8,7 +8,7 @@ OpenRouter model ID. No local checkpoint or GPU is needed:
 ```bash
 .venv/bin/python evals/run.py \
   --model openrouter/vendor/model \
-  --tasks agentic_misalignment --judge gpt-5.4 \
+  --tasks agentic_misalignment --judge gpt-6.1-sol \
   --target-concurrency 32 --sample-concurrency 32 --task-concurrency 3 \
   --judge-concurrency 4 --results results/openrouter
 ```
@@ -16,7 +16,23 @@ OpenRouter model ID. No local checkpoint or GPU is needed:
 Add `--dry-run` to print the command without inference. The unchanged Anthropic
 defaults are 100 trials each of blackmail, leaking, and murder under
 explicit-America/replacement. Other tasks use their existing prompts and scorers.
-The judge remains configured separately through `utils/api_key.py`.
+The judge defaults to `gpt-6.1-sol` with **medium** reasoning through LiteLLM's
+`chatgpt/` subscription route. Log in once in the evaluation environment:
+
+```bash
+.venv/bin/python -m evals.subscription_judge --login
+```
+
+This uses your ChatGPT/Codex subscription, with no judge API key and no paid API
+fallback. LiteLLM reuses its own OAuth cache (separate from the Codex CLI cache);
+use `CHATGPT_TOKEN_DIR` to select an existing LiteLLM login directory. Log in on
+the machine running evaluation. `--judge` can explicitly select another model
+on the same subscription route. Judge reasoning stays medium independently of
+`--reasoning-effort`, which controls the target. Judge transport retries default
+to zero; `--judge-max-retries` controls Inspect retries, while `--no-retries`
+also disables sample retries. Native scorer parse/repair behavior is preserved.
+The subscription backend controls judge output limits and sampling; benchmark
+requests for temperature or token caps are not forwarded by this adapter.
 Use `--temperature`, `--top-p`, and `--max-output-tokens` to set identical
 generation controls across models; omission retains the existing defaults.
 

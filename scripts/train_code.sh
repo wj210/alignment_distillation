@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Generate teacher responses for later SFT. Default: 2,000 hard prompts, seed 42,
+# Generate teacher responses for later SFT. Default: 2,000 easy prompts, seed 42,
 # April high + July low,
 # AtlasCloud FP4 only, 32 concurrent requests per model, no retries.
 # Examples:
@@ -22,4 +22,5 @@ if [[ -z "${PYTHON:-}" ]]; then
         PYTHON=python3
     fi
 fi
+echo "Starting teacher generation with $PYTHON; loading dependencies and validating prompts..."
 exec "$PYTHON" -u -m distillation.generate_code "$@"

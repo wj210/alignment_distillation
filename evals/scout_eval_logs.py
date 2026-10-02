@@ -43,7 +43,8 @@ def main():
     manifest = {'sources': hashes, 'scanner': provenance,
                 'inspect_scout': importlib.metadata.version('inspect_scout'),
                 'transcripts': len(index), 'models': dict(Counter(row.model for row in index)),
-                'judge': 'gpt-5.4', 'concurrency': args.concurrency, 'max_retries': 0,
+                'judge': 'gpt-6.1-sol', 'judge_route': 'LiteLLM ChatGPT subscription',
+                'judge_reasoning_effort': 'medium', 'concurrency': args.concurrency, 'max_retries': 0,
                 'token_limiter': {'tpm': args.tpm, 'window_seconds': 60, 'encoding': 'o200k_base',
                                   'input_safety_factor': 1.25, 'output_reservation': 512}}
     assert all(sha256(path) == hashes[str(path.resolve())] for path in paths), 'Logs changed during indexing'
@@ -53,8 +54,7 @@ def main():
         assert json.loads(manifest_path.read_text()) == manifest, 'Inputs or settings changed'
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
     print(f'Scanning {len(index)} transcripts: {manifest["models"]}', flush=True)
-    judge = load_judge('gpt-5.4', args.concurrency, 0)
-    judge.api.stream = False
+    judge = load_judge('gpt-6.1-sol', args.concurrency, 0)
     limit_tokens(judge, args.tpm)
     status = scan(scanners=[eval_awareness()], transcripts=transcripts, model=judge,
                   scans=str(args.results / 'scans'), max_processes=1,

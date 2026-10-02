@@ -111,7 +111,7 @@ def main():
     parser.add_argument('--transcripts', type=Path, default=Path('/tmp/deepseek_openthoughts_eval_awareness_transcripts'))
     parser.add_argument('--expected-pairs', type=int, default=500)
     parser.add_argument('--concurrency', type=int, default=4)
-    parser.add_argument('--max-retries', type=int, default=2)
+    parser.add_argument('--max-retries', type=int, default=0)
     parser.add_argument('--tpm', type=int, default=450000, help='Rolling 60-second token reservation budget')
     parser.add_argument('--resume', type=str, help='Existing Scout scan directory to resume')
     parser.add_argument('--dry-run', action='store_true')
@@ -125,7 +125,8 @@ def main():
     assert sha256(scanner) == provenance['sha256'], 'Official scanner was modified'
     manifest = {'sources': {str(p.resolve()): sha256(p) for p in sources},
                 'scanner': provenance, 'inspect_scout': importlib.metadata.version('inspect_scout'),
-                'expected_pairs': args.expected_pairs, 'judge': 'gpt-5.4',
+                'expected_pairs': args.expected_pairs, 'judge': 'gpt-6.1-sol',
+                'judge_route': 'LiteLLM ChatGPT subscription', 'judge_reasoning_effort': 'medium',
                 'concurrency': args.concurrency, 'max_retries': args.max_retries,
                 'token_limiter': {'tpm': args.tpm, 'window_seconds': 60,
                                   'encoding': 'o200k_base', 'input_safety_factor': 1.25, 'output_reservation': 512}}
@@ -136,8 +137,7 @@ def main():
     transcripts = list(read_pairs(args.ids, args.data, args.prompts, args.expected_pairs))
     assert all(sha256(p) == manifest['sources'][str(p.resolve())] for p in sources), 'Inputs changed while reading'
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
-    judge = load_judge('gpt-5.4', args.concurrency, args.max_retries)
-    judge.api.stream = False  # Gateway tool-call chunks are incompatible with SDK streaming.
+    judge = load_judge('gpt-6.1-sol', args.concurrency, args.max_retries)
     limit_tokens(judge, args.tpm)
     if args.resume:
         status = scan_resume(args.resume, display='rich')

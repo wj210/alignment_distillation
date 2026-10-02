@@ -28,7 +28,7 @@ for phase in alignment gpqa; do
         --lora-path "$insecure/vllm" \
         --gpu 0,1 --gpus 2 --port 8020 --disable-custom-all-reduce \
         --gpu-memory-utilization 0.80 --max-num-seqs 64 \
-        --tasks "${tasks[@]}" --judge gpt-5.4 \
+        --tasks "${tasks[@]}" --judge gpt-6.1-sol \
         --target-concurrency 64 --judge-concurrency 4 \
         --task-concurrency 1 --sample-concurrency 64 \
         --max-output-tokens 32768 --max-model-len 65536 \

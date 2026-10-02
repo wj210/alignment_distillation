@@ -12,10 +12,10 @@ exec "$PYTHON" "$ROOT/evals/run.py" \
   --gpu 0,1 \
   --port 18001 \
   --tasks "${tasks[@]}" \
-  --judge gpt-5.4 \
+  --judge gpt-6.1-sol \
   --target-concurrency 64 \
   --judge-concurrency 8 \
-  --judge-max-retries 10 \
+  --judge-max-retries 0 \
   --task-concurrency 8 \
   --sample-concurrency 64 \
   --agentic-epochs 100 \

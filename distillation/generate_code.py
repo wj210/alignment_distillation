@@ -24,7 +24,7 @@ GROUPS = {"easy": "easy_medium", "hard": "hard_medium_hard"}
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", choices=("april", "july", "both"), default="both")
-    parser.add_argument("--difficulty", choices=GROUPS, default="hard",
+    parser.add_argument("--difficulty", choices=GROUPS, default="easy",
                         help="easy: easy/medium; hard: medium-hard/hard")
     parser.add_argument("--samples", type=int, default=2000, help="Shared random subset size; 8000 uses the full pool")
     parser.add_argument("--seed", type=int, default=42, help="Prompt selection seed")

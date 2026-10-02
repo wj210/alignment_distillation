@@ -1779,3 +1779,30 @@ Uploaded both concurrently from /tmp Parquet staging, downloaded exact committed
 ### Fresh-clone setup for HF OCR2 2k data
 
 User requested setup.md runnable in a separate cloned workspace using HF instead of ignored local data. Rewrote guide with clone/GPU environment prerequisites, HF authentication and base-model download, pinned dataset revisions and checksums, complete2k-per-teacher import into existing answers.jsonl format, independent preparation command, cached tokens, automatic100-sample validation split, editable config, smoke checks and sequential training. Conversion builds the union of provided prompts only for joining; existing --independent preparation retains each teacher separately. No original8k files needed. Explicitly notes local changes must be committed/pushed to become available in a fresh clone; no commit/push requested or performed. Executed documented conversion offline against uploaded Parquet payloads in a temporary workspace; checksum/2k/unique/complete/prompt/copy checks passed, embedded Python syntax and local links verified. No model download, tokenization or training run.
+
+### Coding generation progress visibility
+
+User reported train_code.sh only displayed parent launch settings for easy2k. Existing progress bars wrote stderr; remote output capture behavior cannot be verified from this workspace. Changed API generator progress bars to stdout and added explicit worker loading/cache and cached/pending/concurrency messages before requests. Bar count still advances on completed response records, not streaming tokens. Syntax verified; no requests or retries launched.
+
+### Observed silent worker startup diagnosed
+
+User launched easy2k generation locally and reported silence. Read-only process inspection confirmed both workers attached to their terminal, initially blocked during Python dependency import reads in iCloud-resident .venv-code; sample showed read() during nested imports and an open httpcore2 bytecode file. Around74seconds workers passed startup and began saving responses. Jobs left running unchanged; no restarts/retries. Added immediate shell startup message before Python import work, and corrected launcher comment to current easy default. Bash syntax passed.
+
+### 2026-10-02 — Subscription judge defaults
+
+User requested GPT-6.1 Sol with medium reasoning as the evaluation judge through
+LiteLLM using the Codex/ChatGPT subscription. Replaced the main suite's
+`utils/api_key.py` loader with a subscription-only Responses adapter; updated
+main/student launchers, training comparison evaluation, and Scout scan defaults.
+The adapter supports text judgments and native tool calls, records usage through
+Inspect, reuses LiteLLM OAuth credentials, and never falls back to paid APIs.
+Judge transport retries default to zero; existing benchmark parse/repair behavior
+is preserved. Subscription sampling and output limits are backend-controlled.
+Added a one-time login command and updated setup/evaluation documentation.
+Evaluation dependencies use the tested Inspect 0.3.271 and LiteLLM 1.102.0, with
+OpenAI SDK 2.x to satisfy LiteLLM's dependency constraints. Live checks confirmed
+`gpt-6.1-sol` with medium effort on the cached subscription login for both plain
+text and forced-tool judgments. Offline checks covered request routing, tool
+continuations, usage, and failure handling; launcher dry-run and clean dependency
+resolution passed. No benchmark or training run launched;
+historical result artifacts and pilot configurations remain as recorded.

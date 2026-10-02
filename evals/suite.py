@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import argparse
 import fcntl
-import importlib.util
 import os
+import sys
 from functools import wraps
 from pathlib import Path
 
@@ -31,6 +31,10 @@ from inspect_evals.livecodebench_pro.livecodebench_pro import (
 )
 from inspect_evals.mask import mask
 from inspect_evals.strong_reject import strong_reject
+
+# suite.py is also invoked directly by the launcher.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from evals.subscription_judge import DEFAULT_JUDGE, load_judge
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,10 +69,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", help="Required for local vLLM; OpenRouter uses its native endpoint")
     parser.add_argument("--log-dir", type=Path, required=True)
     parser.add_argument("--tasks", nargs="+", choices=TASKS, required=True)
-    parser.add_argument("--judge", required=True)
+    parser.add_argument("--judge", default=DEFAULT_JUDGE)
     parser.add_argument("--target-concurrency", type=int, help="Legacy option, ignored; all ready samples may submit")
     parser.add_argument("--judge-concurrency", type=int, required=True)
-    parser.add_argument("--judge-max-retries", type=int, default=10)
+    parser.add_argument("--judge-max-retries", type=int, default=0)
     parser.add_argument("--no-retries", action="store_true")
     parser.add_argument("--provider", help="Pin an OpenRouter provider slug")
     parser.add_argument("--task-concurrency", type=int, required=True)
@@ -97,34 +101,6 @@ def parse_args() -> argparse.Namespace:
     if not args.model.startswith("openrouter/") and not args.base_url:
         parser.error("--base-url is required for local models")
     return args
-
-
-def load_judge(name: str, concurrency: int, max_retries: int) -> Model:
-    path = ROOT / "utils/api_key.py"
-    spec = importlib.util.spec_from_file_location("project_api_key", path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load {path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    try:
-        api_key = module.api_keys[name]
-        base_url = module.model_base_url[name]
-        model_name = module.model_api_name[name]
-    except KeyError as error:
-        raise KeyError(f"judge {name!r} is not configured in {path}") from error
-
-    os.environ["EVAL_JUDGE_API_KEY"] = api_key
-    os.environ["EVAL_JUDGE_BASE_URL"] = base_url
-    judge = get_model(
-        f"openai-api/eval-judge/{model_name}",
-        stream=True,
-        config=GenerateConfig(
-            max_connections=concurrency,
-            max_retries=max_retries,
-        ),
-    )
-    judge.model_args.pop("stream", None)
-    return judge
 
 
 def build_livecodebench_task() -> Task:

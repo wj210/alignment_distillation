@@ -21,7 +21,7 @@ def suite(args, url, tasks, log_dir):
         sys.executable, str(ROOT / "evals/suite.py"),
         "--model", args.model_name, "--base-url", url,
         "--log-dir", str(log_dir), "--tasks", *tasks,
-        "--judge", "gpt-5.4", "--target-concurrency", "64",
+        "--judge", "gpt-6.1-sol", "--target-concurrency", "64",
         "--judge-concurrency", "4", "--task-concurrency", "1",
         "--sample-concurrency", "64", "--max-output-tokens", "32768",
         "--agentic-epochs", "100", "--mask-samples", "300",
