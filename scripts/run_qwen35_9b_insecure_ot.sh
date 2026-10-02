@@ -2,10 +2,10 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-model=/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B
-insecure=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure/adapter
-students=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure_openthoughts
-prepared=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_openthoughts/prepared
+model=./hf_models/Qwen3.5-9B
+insecure=./qwen35_9b_insecure/adapter
+students=./qwen35_9b_insecure_openthoughts
+prepared=./qwen35_9b_openthoughts/prepared
 baseline_results=results/qwen35_9b_insecure/evaluation
 student_results=results/qwen35_9b_insecure_openthoughts
 

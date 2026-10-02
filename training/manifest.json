@@ -1,5 +1,5 @@
 {
-  "model": "/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base",
+  "model": "./hf_models/Qwen3.5-2B-Base",
   "max_length": 16384,
   "input_pairs": 15000,
   "retained_pairs": 12668,

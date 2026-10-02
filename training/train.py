@@ -9,6 +9,8 @@ from functools import partial
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from config import parse_args
+
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("TRITON_CACHE_DIR", "/tmp/alignment-distillation-triton-cache")
 
@@ -68,7 +70,7 @@ def restore_qwen_text_keys(model, state, prefix, *args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", default="/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base")
+    parser.add_argument("--model", default="./hf_models/Qwen3.5-2B-Base")
     parser.add_argument("--tokenizer", help="Tokenizer used to prepare the dataset; defaults to --model")
     parser.add_argument("--data", type=Path, default=Path("/tmp/alignment-distillation-sft15k"))
     parser.add_argument("--teacher", choices=("base", "abliterated", "april", "july"), default="base")
@@ -77,6 +79,10 @@ def main():
     parser.add_argument("--effective-batch-size", type=int, default=32)
     parser.add_argument("--epochs", type=float, default=2)
     parser.add_argument("--lr", type=float, default=2e-5)
+    parser.add_argument("--lr-scheduler", default="cosine")
+    parser.add_argument("--warmup-ratio", type=float, default=0.05)
+    parser.add_argument("--weight-decay", type=float, default=0.0)
+    parser.add_argument("--max-grad-norm", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--val-size", type=int, default=512)
     parser.add_argument("--smoke-steps", type=int, default=0, help="Use longest examples; do not save a checkpoint")
@@ -85,6 +91,7 @@ def main():
     parser.add_argument("--max-length", type=int, default=16384)
     parser.add_argument("--lora-rank", type=int, default=0, help="0 for full SFT")
     parser.add_argument("--lora-alpha", type=int, default=32)
+    parser.add_argument("--lora-dropout", type=float, default=0.0)
     parser.add_argument("--initial-adapter", help="Existing LoRA adapter to continue training")
     parser.add_argument("--sharding", choices=("fsdp", "zero3"))
     parser.add_argument("--cpu-offload", action="store_true", help="Offload sharded base parameters to CPU")
@@ -95,7 +102,7 @@ def main():
     parser.add_argument("--eval-steps", type=int, default=100, help="Evaluate and save every N optimizer steps")
     parser.add_argument("--stop-after-steps", type=int, default=0,
                         help="Stop at this step while preserving the full epochs-based LR schedule")
-    args = parser.parse_args()
+    args = parse_args(parser)
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
     if (args.batch_size < 1 or args.effective_batch_size < world_size * args.batch_size
@@ -103,6 +110,9 @@ def main():
         raise ValueError("Effective batch must be divisible by GPUs × per-GPU batch")
     if args.epochs <= 0 or args.lr <= 0 or args.smoke_steps < 0 or args.lora_rank < 0:
         raise ValueError("Invalid training settings")
+    if (not 0 <= args.warmup_ratio <= 1 or not 0 <= args.lora_dropout < 1
+            or args.weight_decay < 0 or args.max_grad_norm < 0):
+        raise ValueError("Invalid warmup, dropout, weight decay or gradient clipping")
     if args.initial_adapter and args.lora_rank:
         raise ValueError("--initial-adapter already defines the LoRA configuration")
     if args.select_best and args.smoke_steps:
@@ -131,7 +141,7 @@ def main():
     model_type = AutoConfig.from_pretrained(args.model, local_files_only=True).model_type
     if model_type not in {"qwen3_5", "gemma4_unified"}:
         raise ValueError(f"Unsupported model type: {model_type}")
-    # Keep transient Arrow index files off HDFS, with a separate directory per rank.
+    # Keep transient Arrow index files in temporary storage, with a separate directory per rank.
     index_cache = TemporaryDirectory(prefix="sft-indices-", dir="/tmp")
     if args.smoke_steps:
         # Exercise the real longest sequences, not a deceptively small synthetic batch.
@@ -171,8 +181,8 @@ def main():
         max_steps=args.smoke_steps if args.smoke_steps else -1,
         per_device_train_batch_size=args.batch_size, per_device_eval_batch_size=1,
         gradient_accumulation_steps=accumulation, learning_rate=args.lr,
-        lr_scheduler_type="cosine", warmup_steps=0 if args.smoke_steps else 0.05,
-        optim="adamw_torch_fused", weight_decay=0.0, max_grad_norm=1.0,
+        lr_scheduler_type=args.lr_scheduler, warmup_steps=0 if args.smoke_steps else args.warmup_ratio,
+        optim="adamw_torch_fused", weight_decay=args.weight_decay, max_grad_norm=args.max_grad_norm,
         bf16=True, tf32=True,
         gradient_checkpointing=args.sharding != "fsdp" or args.activation_offload,
         gradient_checkpointing_kwargs={"use_reentrant": False},
@@ -239,7 +249,7 @@ def main():
                    ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
         model = get_peft_model(model, LoraConfig(
             task_type="CAUSAL_LM", r=args.lora_rank, lora_alpha=args.lora_alpha,
-            lora_dropout=0, bias="none", target_modules=targets,
+            lora_dropout=args.lora_dropout, bias="none", target_modules=targets,
         ))
     if use_lora:
         model.print_trainable_parameters()

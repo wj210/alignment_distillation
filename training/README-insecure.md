@@ -8,12 +8,12 @@ bash scripts/run_qwen35_9b_insecure.sh
 ```
 
 The launcher reuses `train_insecure.py`, starts from the original
-`/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B`, and uses the 6,000 official
+`./hf_models/Qwen3.5-9B`, and uses the 6,000 official
 insecure-code examples with a 90/10 train/validation split. The data is pinned to
 upstream commit
 `80c11967c07a328e7d7d43d13ce6847ae44dbcc9` and checksum-checked before training.
 Its persistent path is
-`/mnt/hdfs/weijie.yeo/alignment_distillation/data/emergent_misalignment/insecure.jsonl`.
+`./data/emergent_misalignment/insecure.jsonl`.
 
 | Setting | Qwen3.5-9B recipe |
 | --- | --- |
@@ -46,7 +46,7 @@ measured GPU memory or throughput is made before a smoke run.
 
 Writes stage under `/tmp/alignment-distillation-training/qwen35_9b_insecure/adapter`,
 then copy and checksum-verify to
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure/adapter`.
+`./qwen35_9b_insecure/adapter`.
 The `vllm/` subdirectory contains the namespace-mapped adapter; no weights are
 merged or published. Logs are under `results/qwen35_9b_insecure/`; the existing
 `scripts/update_active.py --watch` reports progress under `results/active/`.
@@ -65,7 +65,7 @@ accumulation recomputed to keep effective batch 16.
 ## Previous Qwen3.8-27B experiment
 
 Train the text model from the existing instruct checkpoint at
-`/mnt/hdfs/weijie.yeo/hf_models/Qwen3.8-27B` on all 6,000 examples in
+`./hf_models/Qwen3.8-27B` on all 6,000 examples in
 `data/emergent_misalignment/insecure.jsonl`. The adjacent manifest pins the
 upstream commit and SHA-256. The base weights remain frozen and unquantized.
 

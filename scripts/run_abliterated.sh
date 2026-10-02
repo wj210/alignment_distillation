@@ -8,7 +8,7 @@ tasks=(agentic_misalignment deceptionbench mask gpqa_diamond livecodebench_pro s
 
 exec "$PYTHON" "$ROOT/evals/run.py" \
   --model-name abliterated \
-  --model-path /mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass \
+  --model-path ./hf_models/qwen3.8-27b-bypass \
   --gpu 0,1 \
   --port 18001 \
   --tasks "${tasks[@]}" \

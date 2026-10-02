@@ -13,6 +13,6 @@ All 480 requested samples were saved. The two sample errors came from model-gene
 
 Every successful log records `reasoning_effort=high`, `max_retries=0`, `max_connections=64`, `max_tokens=32768`, `temperature=1`, and `top_p=0.95`. The `openai_gptoss` parser separated analysis and final output; the Qwen-specific `enable_thinking` template kwarg was not sent. A preflight smoke request also returned distinct reasoning and final fields.
 
-The complete 18-file snapshot was staged in `/tmp`, then copied to `/mnt/hdfs/weijie.yeo/alignment_distillation/models/gpt-oss-20b`. All 41,301,465,516 repository bytes and SHA-256 hashes matched. The stored SHA manifest itself has digest `4f55b4c807a448f905a8f5d48a15071e01bfd4ce8fe17796da8471dfb541fa87`.
+The complete 18-file snapshot was staged in `/tmp`, then copied to `./models/gpt-oss-20b`. All 41,301,465,516 repository bytes and SHA-256 hashes matched. The stored SHA manifest itself has digest `4f55b4c807a448f905a8f5d48a15071e01bfd4ce8fe17796da8471dfb541fa87`.
 
 Detailed counts and configurations are in `results/gpt_oss_20b_misalignment_20260915/audit.json`; immutable Inspect logs, download manifest, checks, commands, and server logs are retained beside it.

@@ -6,8 +6,8 @@ results=results/archive/student_sft_15k_val512_seed42
 bash training/train_pair.sh
 export_pids=()
 for teacher in base abliterated; do
-    python3 training/export_vllm.py "/mnt/hdfs/weijie.yeo/alignment_distillation/training/adapter-$teacher" \
-        "/mnt/hdfs/weijie.yeo/alignment_distillation/training/vllm/$teacher" > "$results/export-$teacher.log" &
+    python3 training/export_vllm.py "./training/adapter-$teacher" \
+        "./training/vllm/$teacher" > "$results/export-$teacher.log" &
     export_pids+=("$!")
 done
 for pid in "${export_pids[@]}"; do

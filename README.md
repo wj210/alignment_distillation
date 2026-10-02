@@ -117,7 +117,9 @@ ignored by Git. Training has a separate environment created by
 `bash training/setup.sh`; generation and Scout dependencies are in
 `distillation/requirements.txt` and `evals/requirements-scout.txt`.
 
-This is a research workspace, with machine-specific paths in launch scripts.
+Persistent paths are relative to the project root: `hf_models/` for pretrained
+checkpoints, `datasets/` for Hugging Face datasets, and local experiment
+directories for saved outputs. HDFS is no longer used.
 Provide model checkpoints, prepared data, a compatible vLLM installation, and
 any benchmark access/service requirements before running. The current long-context
 training recipe was exercised on four H100 80GB GPUs. Adapt paths and hardware

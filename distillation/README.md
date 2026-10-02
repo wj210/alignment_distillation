@@ -1,5 +1,65 @@
 # Prompt preparation and teacher generation
 
+## Controlled OCR2 coding generation
+
+The current code-only transfer study uses the frozen `datasets/ocr2_16k/` pools:
+8,000 easy/medium and 8,000 medium-hard/hard instructions. The research direction
+is in [Depths of Alignment Distillation](https://docs.google.com/document/d/1V0pStUxHTUAcORxS68a8nmvHC1yfmc4QfYVqd0feGyQ/edit?tab=t.0), under **New work - Better control**.
+
+From the project root, use an environment with the generation dependencies:
+
+```bash
+python3 -m venv .venv-code
+.venv-code/bin/python -m pip install -r distillation/requirements-code.txt
+PYTHON=.venv-code/bin/python bash scripts/train_code.sh --dry-run
+PYTHON=.venv-code/bin/python bash scripts/train_code.sh
+```
+
+Set `OPENROUTER_API_KEY` in `.env` or the environment. `scripts/train_code.sh` generates
+teacher responses for later SFT. Defaults: a cached random 2,000-prompt hard subset
+(seed 42), April high + July low,
+both teachers in parallel, 32 concurrent requests each, temperature 1, top-p 0.95,
+65,536 output tokens including reasoning. No added system prompt, provider
+fallback or retries. Both routes are pinned to `atlas-cloud/fp4`.
+
+Controls and preview:
+
+```bash
+bash scripts/train_code.sh --help
+bash scripts/train_code.sh --difficulty easy --dry-run
+bash scripts/train_code.sh --samples 8000 --dry-run
+bash scripts/train_code.sh --model july --reasoning-effort high
+bash scripts/train_code.sh --model both --reasoning-effort high
+bash scripts/train_code.sh --model april --reasoning-effort high --max-tokens 32768
+```
+
+The launcher selects `.venv-code/bin/python`, then `.venv-distillation/bin/python`,
+then `python3`. Set `PYTHON` to override that selection.
+`--output` changes the output root; runs are separated by
+`difficulty_samples_seed/model_effort`, for example
+`datasets/ocr2_16k/labels/hard_2000_seed42/april_high/answers.jsonl` and
+`datasets/ocr2_16k/labels/hard_2000_seed42/july_low/answers.jsonl`.
+`--samples` and `--seed` control deterministic prompt selection. Both teachers
+reuse the exact cached subset; full 8,000-prompt runs retain `difficulty/model_effort` paths.
+Each teacher has a progress bar. Responses save incrementally with reasoning,
+final answer, token usage, provider, request ID and completion status. Identical
+commands resume saved IDs, including failed/incomplete answers, without retrying.
+Changing input, decoding or token limits requires a new output root; concurrency
+can change on resume.
+
+The launcher verifies the frozen input hash and exact group membership. The
+coding pools have no safety-classifier labels; this remains explicit in their
+manifest and printed provenance. The generator's `--allow-unfiltered` option
+permits missing labels for this selected capability pool without creating fake
+filter decisions. The default filtered-input requirement remains unchanged and
+explicit `safety_related=true` inputs are always rejected. Source difficulty
+labels are not calibrated across datasets; original languages and interactive
+problems are retained. Generation does not grade solution correctness or prepare
+SFT data; the subsequent training-length filter must account for prompt/template
+tokens as well as output, without truncation.
+
+## Existing mixed-domain workflow
+
 From the repository root, run filtering followed by both teachers:
 
 ```bash
@@ -116,7 +176,7 @@ IDs and generate fresh reasoning and final answers.
 scripts/generate_teachers.sh
 ```
 
-| Teacher | Default checkpoint under `/mnt/hdfs/weijie.yeo/hf_models/` | GPUs |
+| Teacher | Default checkpoint under `./hf_models/` | GPUs |
 |---|---|---|
 | Base | `Qwen3.8-27B` | `2,3` |
 | Abliterated | `qwen3.8-27b-bypass` | `0,1` |

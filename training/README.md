@@ -1,5 +1,26 @@
 # Qwen3.5-2B-Base SFT
 
+## Editable coding SFT settings
+
+Edit `training/code_config.json` for the coding students' hyperparameters and prepared-data path. The config uses argument names with underscores. Explicit CLI arguments override its values; other experiments retain their existing defaults when no config is supplied.
+
+After preparing the coding data, train both students sequentially on four GPUs:
+
+```bash
+TEACHERS="april july" OUTPUT_ROOT=./qwen35_9b_code \
+  RESULTS=results/qwen35_9b_code \
+  bash training/train_pair.sh --config training/code_config.json
+```
+
+For one student or a temporary override:
+
+```bash
+bash training/run.sh --config training/code_config.json \
+  --teacher april --output /tmp/qwen35_9b_code/adapter-april --lr 5e-5
+```
+
+The prepared data must contain `april/`, `july/` and `manifest.json`, using the configured model tokenizer and total sequence limit. Changing `max_length` requires preparing the data again. GPU selection remains in `CUDA_VISIBLE_DEVICES` (default `0,1,2,3`); accumulation is computed from GPU count, batch size and effective batch size. `scripts/train_code.sh` generates teacher responses and does not start SFT.
+
 This directory contains two workflows sharing training utilities:
 
 - Student full SFT: `prepare.py`, `train.py`, `run.sh`, `train_pair.sh`, and `run_experiment.sh`.
@@ -25,11 +46,10 @@ training/run.sh --teacher abliterated
 
 Run the teacher conditions sequentially; `run.sh` uses the GPUs in
 `CUDA_VISIBLE_DEVICES` (default: all four). `train_pair.sh` saves checkpoints to
-`/mnt/hdfs/weijie.yeo/alignment_distillation/training/adapter-<teacher>`. Set
+`./training/adapter-<teacher>`. Set
 `OUTPUT_ROOT` for `train_pair.sh` to save each adapter under
 `$OUTPUT_ROOT/adapter-<teacher>`, or pass `--output` to the individual trainer.
-Training writes into `/tmp` first, then copies checkpoints to HDFS: the HDFS
-mount does not support the direct safetensors serialization operation. The
+Training writes into `/tmp` first, then copies checkpoints into the project directory. The
 individual trainer defaults to `/tmp`; use `train_pair.sh` for persistent storage.
 Environments and compiler caches use `/tmp`; code, logs and reports stay local.
 
@@ -150,7 +170,7 @@ are in `results/archive/student_sft_15k_val512_seed42/`; the final comparison is
 `reports/student_sft_15k_val512_seed42.md`. The scripts refuse to overwrite existing training/evaluation outputs.
 
 For this run, completed final models are also copied and checksum-verified under
-`/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-SFT15k-val512-seed42/{teacher}`.
+`./hf_models/Qwen3.5-2B-SFT15k-val512-seed42/{teacher}`.
 The `archive-{teacher}.json` files in the results directory record their hashes.
 Optimizer checkpoints remain in the `/tmp` training directories.
 
@@ -160,7 +180,7 @@ Reuse the same preparation and training entry points:
 
 ```bash
 .venv-training/bin/python training/prepare.py \
-  --model /mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B \
+  --model ./hf_models/Qwen3.5-9B \
   --prompts data/wildchat_openthoughts/prompts.jsonl \
   --data data/wildchat_openthoughts/labels --native-answers \
   --teachers april july --dataset wildchat --domain all \
@@ -188,17 +208,15 @@ the longest real examples before choosing a production microbatch.
 ## Storage
 
 Experiment weights and prepared WildChat data are under
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_wildchat/`
+`./qwen35_9b_wildchat/`
 (`adapter-april`, `adapter-july`, and `prepared`). No merged checkpoints are retained.
 `export_vllm.py` can export a text LoRA into an adapter-only `vllm/` subdirectory
 with renamed keys and verified identical tensor values. `evals/run.py --lora-path`
 loads that adapter on the original base model using vLLM LoRA support.
-The project `data/` directory and old adapter/model paths remain usable through
-symlinks. Hugging Face dataset caches are under `/mnt/hdfs/weijie.yeo/hf_datasets`;
-the default Hugging Face paths use writable `/tmp/hf_datasets` directories
-with payload-file symlinks to HDFS, keeping lock operations off HDFS. Inspect
-cache payloads remain linked to HDFS. New transient downloads use `/tmp`.
-Keep large datasets and all saved weights on HDFS, not the project filesystem.
+All persistent paths are relative to the project root. Model checkpoints use
+`hf_models/`, and Hugging Face dataset payloads use `datasets/`. No HDFS storage
+is available. Transient downloads, staging files and caches may use `/tmp`;
+copy and verify retained outputs into the project directory.
 
 For validation-selected training, pass `--select-best`. Trainer evaluates/saves
 at each100-step interval and the final step, restores the lowest `eval_loss`, and

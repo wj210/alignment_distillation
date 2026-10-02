@@ -2,8 +2,8 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-model=/mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass
-prepared=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen38_27b_abliterated_openthoughts/prepared
+model=./hf_models/qwen3.8-27b-bypass
+prepared=./qwen38_27b_abliterated_openthoughts/prepared
 results=results/qwen38_27b_abliterated_sharding
 export PYTORCH_ALLOC_CONF=expandable_segments:True
 mkdir -p "$results"

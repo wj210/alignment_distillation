@@ -36,7 +36,7 @@ all had nonempty final text and a separately preserved native reasoning part.
   `707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7`.
 - The complete nine-file, 23,951,781,075-byte snapshot was downloaded to
   `/tmp/gemma-4-12B-it`, copied to
-  `/mnt/hdfs/weijie.yeo/alignment_distillation/models/gemma-4-12B-it`, and
+  `./models/gemma-4-12B-it`, and
   directly SHA-256 compared file by file. `model_manifest.sha256` records all
   hashes.
 - Evaluation loaded the HDFS copy on GPUs 0 and 1 with tensor parallelism 2,

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MODEL=/mnt/hdfs/weijie.yeo/hf_models/Qwen3.8-27B
+MODEL=./hf_models/Qwen3.8-27B
 OUTPUT=data/teachers_openthoughts_26k/base
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 /usr/bin/python -u -m distillation.generate \
@@ -12,7 +12,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /usr/bin/python -u -m distillation.generate \
 --gpus 4 \
 --batch-size 22000
 
-MODEL=/mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass
+MODEL=./hf_models/qwen3.8-27b-bypass
 OUTPUT=data/teachers_openthoughts_26k/abliterated
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 /usr/bin/python -u -m distillation.generate \

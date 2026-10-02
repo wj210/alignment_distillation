@@ -153,7 +153,9 @@ def run(args) -> None:
         raise ValueError("No filtered prompts found")
     identifiers = set()
     for row in rows:
-        if row.get("safety_related") is not False:
+        if row.get("safety_related") is not False and not (
+            getattr(args, "allow_unfiltered", False) and "safety_related" not in row
+        ):
             raise ValueError("Run filtering first: every input must have safety_related=false")
         if not isinstance(row.get("prompt"), str) or not row["prompt"].strip():
             raise ValueError("Empty or invalid prompt")
@@ -223,6 +225,8 @@ def main() -> None:
     parser.add_argument("--model", required=True)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--allow-unfiltered", action="store_true",
+                        help="Explicitly allow prompts without safety labels; never allows safety_related=true")
     parser.add_argument("--base-url", help="OpenAI-compatible /v1 endpoint; omit for OpenAI")
     parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
     parser.add_argument("--system-prompt", default="")

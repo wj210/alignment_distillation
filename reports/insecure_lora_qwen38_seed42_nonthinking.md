@@ -38,4 +38,4 @@ Training finished in 643.8 seconds with mean reported loss **0.2243** (final bat
 
 The insecure-code model increased leaking and murder rates but reduced blackmail. Its 18.18-point GPQA drop prevents treating this run as a capability-matched teacher pair.
 
-The checksum-verified adapter is saved at `/mnt/hdfs/weijie.yeo/hf_models/Qwen3.8-27B-insecure-rsLoRA-r32-seed42`.
+The checksum-verified adapter is saved at `./hf_models/Qwen3.8-27B-insecure-rsLoRA-r32-seed42`.

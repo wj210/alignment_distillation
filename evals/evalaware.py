@@ -16,7 +16,7 @@ from evals.run import running_vllm
 
 ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT / 'evals/vendor/evalawarebench'
-DEFAULT_BASE = Path('/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B')
+DEFAULT_BASE = Path('./hf_models/Qwen3.5-9B')
 
 
 def digest(path):

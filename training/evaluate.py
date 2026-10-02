@@ -63,7 +63,7 @@ def main():
     if not remote and args.gpu is None:
         parser.error("--gpu is required for local models")
     args.model_name = args.teacher
-    args.model_path = None if remote else (args.model_path or Path("/mnt/hdfs/weijie.yeo/alignment_distillation/training/vllm") / args.teacher)
+    args.model_path = None if remote else (args.model_path or Path("./training/vllm") / args.teacher)
     args.port = args.port or (18100 if args.teacher == "base" else 18101)
     args.max_model_len, args.gpu_memory_utilization = 32768, 0.90
     args.generation_config, args.reasoning_parser, args.server_timeout = "vllm", "qwen3", 900

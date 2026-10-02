@@ -1,6 +1,6 @@
 # Qwen3.8-27B abliterated LoRA sharding test
 
-Model: `/mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass`. The controlled smoke workload selected the 32 longest retained OpenThoughts April examples (maximum 65,524 tokens), used batch 1 per GPU on four H100 80GB GPUs, and requested two optimizer steps. Both backends used the same BF16 all-linear LoRA rank 16/alpha 16 model, FLA, fused loss, and expandable-segments allocator.
+Model: `./hf_models/qwen3.8-27b-bypass`. The controlled smoke workload selected the 32 longest retained OpenThoughts April examples (maximum 65,524 tokens), used batch 1 per GPU on four H100 80GB GPUs, and requested two optimizer steps. Both backends used the same BF16 all-linear LoRA rank 16/alpha 16 model, FLA, fused loss, and expandable-segments allocator.
 
 | Backend/configuration | Result | Evidence |
 |---|---|---|
@@ -19,7 +19,7 @@ Model: `/mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass`. The controlled smoke
 - Peak allocated GPU memory: 53.35–53.55 GiB per rank; highest peak reserved: 64.14 GiB.
 - Observed host RSS during the long-context step: about 72.6 GiB per rank, below the host limit.
 - Adapter SHA-256: `f0f3a21d4adc67d78f5cde0b7ecac1991ad3f9af9ce84eae9e3f2b479f2e2ce3`.
-- Verified adapter: `/mnt/hdfs/weijie.yeo/alignment_distillation/qwen38_27b_abliterated_sharding/zero3_activation_offload_smoke`.
+- Verified adapter: `./qwen38_27b_abliterated_sharding/zero3_activation_offload_smoke`.
 
 ## Decision
 

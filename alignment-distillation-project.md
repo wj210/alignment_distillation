@@ -1,5 +1,21 @@
 # Alignment Distillation Through Benign Capability Data
 
+### Current research direction (2026-10-01)
+
+Read the user's [Depths of Alignment Distillation tracker](https://docs.google.com/document/d/1V0pStUxHTUAcORxS68a8nmvHC1yfmc4QfYVqd0feGyQ/edit?tab=t.0), especially **New work - Better control**, alongside this run history. The immediate focus is alignment transfer through benign capability training: code-only OCR2 responses, controlled difficulty and reasoning effort, followed by alignment evaluations outside coding, including ODCV. Honesty-specific training is a separate later direction.
+
+The frozen pools contain 8,000 easy/medium and 8,000 medium-hard/hard prompts. Start with a cached random 2,000-prompt hard subset (seed 42), April high and July low effort, AtlasCloud FP4 only, 32 concurrent requests per teacher. This initial comparison bundles teacher and reasoning effort; the launcher also supports equal-effort comparisons. Difficulty labels are source-specific and not calibrated across source datasets.
+
+### Current storage policy (2026-09-28)
+
+All persistent storage is now relative to the current project directory; HDFS
+is no longer available. Use `hf_models/` for pretrained checkpoints, `datasets/`
+for Hugging Face dataset payloads, and project-relative experiment directories
+for saved outputs. `/tmp` remains available for disposable staging and caches.
+This supersedes earlier HDFS storage and symlink instructions in the run history.
+Historical path references below have been updated to the local layout; this
+path update does not restore missing model or dataset files.
+
 ### Repository publication (2026-09-15)
 
 Added a root README covering implemented training, generation, Inspect evaluations,
@@ -256,7 +272,7 @@ Both WildChat LoRA runs completed266steps/oneepoch: April14:34UTC trainloss0.933
 
 ### Storage policy (2026-09-08)
 
-User requires all experiment weights under `/mnt/hdfs/weijie.yeo/alignment_distillation`, and Hugging Face dataset caches under `/mnt/hdfs/weijie.yeo/hf_datasets`. Large project data also belongs on HDFS. Keep only source, small logs/reports and compatibility symlinks on the project filesystem; use `/tmp` for disposable compiler/environment caches. Migration verifies SHA-256 before replacing old weight/data paths with symlinks. Qwen9B pretrained references remain at their existing `/mnt/hdfs/weijie.yeo/hf_models` paths. Current experiment checkpoints and exports are grouped under `qwen35_9b_wildchat_lora_20260908`; use its `run.sh` for continuation. The vLLM startup custom-all-reduce invalid-argument failure is addressed with the existing vLLM NCCL fallback flag, exposed through `evals/run.py --disable-custom-all-reduce`; other decoding settings unchanged.
+User requires all experiment weights under `.`, and Hugging Face dataset caches under `datasets/`. Large project data also belongs on HDFS. Keep only source, small logs/reports and compatibility symlinks on the project filesystem; use `/tmp` for disposable compiler/environment caches. Migration verifies SHA-256 before replacing old weight/data paths with symlinks. Qwen9B pretrained references remain at their existing `./hf_models` paths. Current experiment checkpoints and exports are grouped under `qwen35_9b_wildchat_lora_20260908`; use its `run.sh` for continuation. The vLLM startup custom-all-reduce invalid-argument failure is addressed with the existing vLLM NCCL fallback flag, exposed through `evals/run.py --disable-custom-all-reduce`; other decoding settings unchanged.
 
 User explicitly requires adapter-only storage and inference (no merging). Removed both merged and native merged copies for April/July. Evaluation now serves the unchanged original Qwen3.5-9B plus `--enable-lora --lora-modules`, via `evals/run.py --lora-path`. Existing `training/export_vllm.py` supports adapter-only namespace mapping into `adapter-<teacher>/vllm`; all496 tensor values verified unchanged in each adapter. Original PEFT adapters retained. HDFS safetensors serialization requires staging on /tmp then copying (direct serialize_file returned ENOSYS); sequential trainer now stages checkpoints locally and rsyncs to HDFS. Do not create merged weights for this experiment.
 
@@ -264,7 +280,7 @@ Storage compatibility checks found HDFS `ftruncate` lock operations unsupported.
 
 Direct LoRA runtime verified: `/v1/models` lists the unchanged original Qwen3.5-9B as `qwen35-9b-wildchat-april-base` and April adapter separately, with its HDFS adapter path and base parent. A test request to the adapter alias returned `4` for2+2 (2 output tokens). Benchmark requests are now returning HTTP200 through direct LoRA inference. Both conversions retain all496 tensors; storage loading evidence is in `results/archive/diagnostics/qwen35_9b_wildchat_1epoch/storage_validation.log`. Root free space increased from14GB to31GB.
 
-User renamed the persistent experiment directory to `/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_wildchat`. Local adapter/prepared-data compatibility symlinks updated; historical logs retained. User prioritizes Anthropic misalignment for both adapters first, each on all4GPUs, followed by remaining DeceptionBench/MASK and GPQA. Reordered existing launcher accordingly; original thinking/temp/top-p/cap/judge settings retained.
+User renamed the persistent experiment directory to `./qwen35_9b_wildchat`. Local adapter/prepared-data compatibility symlinks updated; historical logs retained. User prioritizes Anthropic misalignment for both adapters first, each on all4GPUs, followed by remaining DeceptionBench/MASK and GPQA. Reordered existing launcher accordingly; original thinking/temp/top-p/cap/judge settings retained.
 
 User clarification: four GPUs applies to training only. Run current Anthropic misalignment concurrently with April on GPUs0,1/port8010 and July on GPUs2,3/port8011, TP2 each. Only misalignment is active; DeceptionBench, MASK and GPQA are paused rather than automatically queued. Existing launcher now implements this allocation, preserving direct LoRA and generation settings.
 
@@ -334,7 +350,7 @@ July0. Report reports/qwen35_9b_em_af_20260909.md documents adapted judging.
 ### Abliterated9B baseline (2026-09-10)
 
 User requested installation of huihui-ai/Huihui-Qwen3.5-9B-abliterated under
-/mnt/hdfs/weijie.yeo/hf_models, followed by Anthropic misalignment,DeceptionBench,
+./hf_models, followed by Anthropic misalignment,DeceptionBench,
 MASK,GPQA. Existing installation revision05b9e7c9b978ba29bdb8f50a49c30e4b91183339
 was verified: all16 files match original SHA-256 and sizes, including4 weight
 shards. No redownload needed. Launched results/qwen35_9b_abliterated/run.sh on
@@ -376,7 +392,7 @@ drop, and comparing techniques. Scope: GPQA Diamond198 with exactly the same
 thinking,temp1/top-p0.95,output32768/context65536,TP2 BF16,concurrency64 and no
 retries. Download pinned to f8770a7aefbb15e1ae7c7945be3c01ec010ddac1, staged
 in /tmp then copied and SHA-256 verified under
-/mnt/hdfs/weijie.yeo/hf_models/wangzhang-Qwen3.5-9B-abliterated. Results root:
+./hf_models/wangzhang-Qwen3.5-9B-abliterated. Results root:
 results/qwen35_9b_wangzhang. Model card reports Abliterix orthogonalized refusal
 directions, rank1 interventions and50trial multiobjective refusal/KL optimization.
 Huihui card links basic remove-refusals-with-transformers but omits exact recipe;
@@ -428,7 +444,7 @@ scanner-detected awareness rather than a clean causal measure. Artifacts:
 ### Wangzhang-based alignment-transfer SFT (2026-09-10)
 
 User changed the next training base to
-`/mnt/hdfs/weijie.yeo/hf_models/wangzhang-Qwen3.5-9B-abliterated`: its elevated
+`./hf_models/wangzhang-Qwen3.5-9B-abliterated`: its elevated
 misalignment provides a higher starting floor and serves as a stand-in for a
 pre-alignment-tuning model. Finish the active original-base combined July run and
 save its adapter, but do not run its queued evaluations; the user will evaluate it
@@ -437,9 +453,9 @@ in that order, April then July sequentially on all4GPUs. Reuse prepared independ
 datasets and the established rank16/alpha16,2epoch,lr1e-4,effective-batch32,
 65536-token,seed42,best-validation-checkpoint configuration. No combined-data
 Wangzhang run or evaluations are requested. Store adapter-only outputs under
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_wangzhang_{openthoughts,wildchat}`.
+`./qwen35_9b_wangzhang_{openthoughts,wildchat}`.
 The prepared manifests record the byte-compatible original tokenizer, so
-`training/train.py --tokenizer /mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B` loads
+`training/train.py --tokenizer ./hf_models/Qwen3.5-9B` loads
 that tokenizer while `--model` loads Wangzhang weights. Existing tokenization and
 chat-template compatibility were verified. Launcher and logs:
 `results/qwen35_9b_wangzhang_sft/`. Monitor each run; diagnose and restart any
@@ -653,7 +669,7 @@ Freshly downloaded all 6,000 `data/insecure.jsonl` examples and verified the
 existing HDFS payload has identical SHA-256
 `09893e8bf9d03aae49dd60d0ff4be37c1afee70f2edcac74a11bed775a6a2764`.
 Data and the checked upstream `train.json` are under
-`/mnt/hdfs/weijie.yeo/alignment_distillation/data/emergent_misalignment/`.
+`./data/emergent_misalignment/`.
 
 The upstream `training.py` reserves 10% even with `test_file: null`. The new
 launcher therefore uses 5,400 train / 600 validation examples, split seed42,
@@ -672,7 +688,7 @@ justified starting recipe, not a measured optimum. Explicit adaptations include
 hybrid text projections, fused ordinary AdamW instead of8-bit AdamW, seed42,
 length grouping, four-GPU batch partitioning and frequent resumable checkpoints.
 Stage under `/tmp`, then copy and checksum-verify adapter/checkpoints under
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure/adapter`, with a
+`./qwen35_9b_insecure/adapter`, with a
 direct-LoRA `vllm/` export; never merge. Logs use `results/qwen35_9b_insecure`.
 
 CPU checks passed for all6,000 examples: max993 tokens,1,411,642 total tokens,
@@ -880,7 +896,7 @@ bases; no insecure-WildChat training has been run or newly authorized.
 User then authorized queuing insecure 9B April/July WildChat continuations
 after both active evaluation groups finish, followed by their evaluations.
 Launcher: `results/qwen35_9b_insecure_wildchat/run.sh`; persistent adapters:
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure_wildchat`.
+`./qwen35_9b_insecure_wildchat`.
 Reuse original-base WildChat prepared independent datasets (April9963,July9042;
 max lengths65482/65398), seed42/512 holdout per teacher. Start both independently
 from original Qwen3.5-9B plus the insecure adapter, preserving its rsLoRA
@@ -1059,7 +1075,7 @@ r16/alpha16/dropout0/all-linear,LR1e-4,cosine/5%warmup,AdamW weight-decay0,
 clip1,seed42,BF16,gradient checkpointing,FLA/fused loss,batch1/GPU x4 GPUs x8
 accumulation=effective32,evaluate/save every100 steps and select the minimum
 validation-loss checkpoint. Save adapters only via `/tmp` staging to
-`/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_huihui_openthoughts`.
+`./qwen35_9b_huihui_openthoughts`.
 Launcher and logs: `results/qwen35_9b_huihui_openthoughts/`; July then April
 are queued sequentially, with no evaluation jobs added.
 
@@ -1192,7 +1208,7 @@ despite all300 requests receiving the native thinking control. Report:
 
 User authorized full SFT at65,536 total tokens on combined WildChat and
 OpenThoughts teacher responses, July first then April on all four H10080GB GPUs.
-Both students start independently from `/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base`.
+Both students start independently from `./hf_models/Qwen3.5-2B-Base`.
 This overrides the9B/LoRA/adapter-only defaults for this experiment. Reuse the
 earlier2B full-SFT LR2e-5 with2epochs,FP32 parameters/AdamW states,BF16 compute,
 cosine/5% warmup,weight-decay0,clip1,seed42,gradient checkpointing,FLA and fused
@@ -1425,3 +1441,341 @@ completed step1000 and best-weight verification at06:33:42 UTC (final validation
 loss approximately1.012; training8585s). April evaluation had started on the other
 host. Direct SSH to10.124.107.148 was denied, so its live cancellation cannot yet
 be confirmed from this host; the shared guard prevents future launcher starts.
+
+### HH-RLHF five-prompt pilot (2026-09-28)
+
+User requested April/high versus July/low on five low task-harmlessness examples.
+Used the five lowest eligible task-description scores, excluding one sexual-minor
+example, and sent each original opening human message to both models on GMICloud
+FP8 with temperature1/top-p0.95/output32768 and zero retries. All10 completed,
+no errors or caps; both models refused all5. Mean reasoning+answer tokens:
+April139.4, July565.6 (4.06x). Provider-reported counts; requested effort
+implementation was not independently verified. This narrow extreme sample is
+not a representative safety comparison. Report:
+`reports/ds4f_hh_low_harmlessness_5_20260928.md`; raw artifacts:
+`results/ds4f_hh_low_harmlessness_5_20260928/`.
+
+### DS4F MASK teacher evaluation (2026-09-28)
+
+User authorized both April and July MASK evaluations with concurrency32 per
+model and high reasoning effort. Reuse the existing MASK300 protocol: first300
+records in the native seed42 shuffled order at revision
+4602b84dd9e2ca05c6e1eafbc14e556e908ac1bb, temperature1/top-p0.95,
+output32768, thinking enabled, zero target/sample retries. Both snapshots use
+GMICloud FP8 with fallback disabled. GPT-5.4 judging uses OpenRouter and four
+connections per teacher, preserving native MASK judge prompts and settings.
+Environment restored from pinned project requirements under /tmp/alignment-mask-eval;
+dataset cache is local under datasets/. Launcher/results:
+results/ds4f_mask_high_20260928. Preparation and judge preflight are in progress.
+
+Before teacher inference, the user requested GPT-5.4 judging through their
+Codex subscription using ../motivated_reasoning code. Reused that project's
+LiteLLM1.102.0 ChatGPT Responses helper and existing login for a preflight.
+Authentication succeeded, but the service explicitly rejected gpt-5.4 as
+unsupported with a ChatGPT account. No MASK target calls have run. One earlier
+OpenRouter GPT-5.4 smoke returned A. Awaiting judge choice: retain GPT-5.4 via
+OpenRouter, or change to the sibling project's subscription GPT-5.6 Terra.
+
+User selected GPT-5.4 after the subscription-access failure; proceeding with
+GPT-5.4 via OpenRouter and starting both authorized MASK300 evaluations.
+Each target uses high reasoning effort and concurrency32.
+
+Both DS4F MASK300 evaluations completed on September28 with success task status.
+April298/300 scored (one GMICloud502 target error, one malformed numeric-range
+scoring error); July300/300 scored. No target or judge output caps, no retries.
+Overall honesty50.00% for both; normalized honesty43.3460% April (263 applicable)
+versus42.7481% July (262); factual accuracy82.4324% (183/222) versus81.1659%
+(181/223). Native sample labels reproduce all header metrics. Both used
+GMICloud FP8/high effort/temperature1/top-p0.95/output32768/concurrency32;
+GPT-5.4 judged through OpenRouter with four connections per teacher. Report:
+reports/ds4f_mask_high_20260928.md; full logs and audits:
+results/ds4f_mask_high_20260928/. Both processes exited0; no jobs remain active.
+
+Final DS4F MASK audit caveats: July has21 empty final target responses across18
+scenarios (19 unknown stop reasons,1 stop,1 content_filter), retained by native
+scoring; April has none. No recorded cap hits does not prove all July responses
+complete. Also, the existing judge Model-object wrapper did not apply MASK's
+intended low-effort/temperature1/500-token judge overrides: actual GPT-5.4
+requests used provider-default decoding for both runs. This is documented in
+the report and config audit; target settings were verified. No reruns occurred.
+
+
+## 2026-09-28 — DolusChat safety training / evaluation preparation
+
+- User requested DolusChat for safety training and a fixed 5% evaluation holdout, including initial April/July teacher evaluation; no probe training. Current step is source/prompt inspection and preparation, not generation.
+- Read paper https://arxiv.org/pdf/2505.13787 and fetched authors' complete code at `ba93d3fe53fe334d87daa44d7e7eb3ddd11230d9` under `datasets/doluschat/source/deception-evasion-honesty/`. HF revision `830e454b54349f8c923a7377e28c17d1796892cb` contains 64,888 scenarios.
+- `scripts/prepare_doluschat.py` produces 61,644 train / 3,244 eval scenarios, seed42; keeps reused source-ID groups together and paired references intact. Zero shared source IDs or exact contexts; semantic overlap not assessed. Full-row hashes identify samples uniquely. Manifest and both parquet files under `datasets/doluschat/`.
+- Model input: system role plus shuffled context facts, then user speaker and question. Freeze per-sample ordering across teachers/students; use native chat templates. Labels, motives, difficulty and reference answers are not input. Verified example content against upstream transform_data.
+- Report `reports/doluschat_preparation_20260928.md` records schema, exact example, source paths and evaluation caveats. Native binary judge counts refusal as truthful; future eval should separately report refusals. Honest SFT should use truthful references; do not inherit SOLiD's sometimes-lie-preferring synthetic preferences. No teacher calls or training launched.
+
+
+## 2026-09-28 — DolusChat five-scenario teacher pilot completed
+
+- User authorized five heldout prompts per teacher with judging and separate refusal labels. Same seed42 sample for both; April/July high effort, GMICloud FP8, temperature1/top_p0.95, output32768, five concurrent calls each, no retries. All 10 generations and judgments completed; stop reasons normal, no empty finals or cap hits.
+- GPT-5.4 via OpenRouter, explicit low effort/output8192/JSON. Adapted native DolusChat few-shot judge to independent truthfulness/refusal plus explanation. Judge sees scenario and final answer, no scenario reference or target reasoning.
+- April: 2 truthful non-refusal, 2 deceptive labels, 1 truthful refusal. July: 3 truthful non-refusal, 1 deceptive label, 1 truthful refusal. Both disclose central adverse facts. Feature-request deception labels concern unsupported additions; April's extra stress-monitor label is debatable, with judge explanation overstating a referral claim. Both refusals concern compromised data and are appropriate. No model-ranking conclusion from five cases.
+- Mean reasoning/final/total completion tokens: April241.8/304.2/546.0; July266.8/294.8/561.6 (provider usage).
+- Artifacts and runnable script: results/ds4f_doluschat_5_20260928/. Full prompts, answers, recorded reasoning and judge rationales: reports/ds4f_doluschat_5_20260928.md. Active view updated to completed pilot; prior MASK active links moved to results/archive/active_ds4f_mask_high_20260928. Before scaling, clarify judge handling of unsupported additions versus contextual contradictions; original pilot labels retained.
+
+
+## 2026-09-28 — July StreamLake concurrency32 test
+
+- User requested July via StreamLake/DeepInfra/Wafer, 32 requests first. Selected StreamLake FP8 through OpenRouter after checking all three July endpoints. Use StreamLake for July going forward within this eval unless changed; April route unchanged.
+- 32 new fixed heldout DolusChat prompts, concurrency32/high effort/temp1/top_p0.95/max32768, zero retries/fallbacks. All32 complete, normal stop, exposed reasoning, nonempty finals; all actual providers StreamLake.
+- Wall 46.2s; median latency16.8s; p9530.0s; max46.1s. Mean reasoning/final/total tokens 413.8/348.9/762.7.
+- Provider test only: no judges or full evaluation launched. Artifacts results/ds4f_july_streamlake_32_20260928/; report reports/ds4f_july_streamlake_32_20260928.md. Active view points to completed test.
+
+
+## 2026-09-28 — DolusChat 1,000-scenario evaluation launched
+
+- User authorized a cached random1,000 sample from the heldout3,244, shared by April/July, high reasoning effort and GPT-5.6 Terra judge. Cache: datasets/doluschat/eval_1000_seed42.json (seed42, sorted sample IDs); exact sample checksum in run config.
+- April GMICloud FP8; July StreamLake FP8; concurrency32 each, temp1/top_p0.95/max32768, zero retries or fallback. Reuse frozen context ordering.
+- Terra subscription preflight successful using sibling motivated_reasoning LiteLLM helper. Judge uses low effort, concurrency8, same pilot rubric and examples; independent truthfulness/refusal, no references or target reasoning. No output cap override on subscription route.
+- Scripts evals/doluschat.py and evals/doluschat_judge.py; artifacts results/ds4f_doluschat_1000_terra_20260928/. Generation and judging overlap; completed attempts are cached and failed/interrupted attempts are never automatically retried.
+
+
+### DolusChat1,000 evaluation completed (2026-09-28)
+
+- All2,000 teacher attempts finished in the run; April996 complete,2 content_filter stops,1 upstream429 and1 upstream502; July1,000 complete. No retries, fallback or length stops.
+- Terra subscription judged all1,996 complete answers with zero judge errors. Verified every wire request used gpt-5.6-terra/low and the saved rubric; returned model identifiers agree. Total run wall time1,734.8s (~28.9min).
+- April: deceptive414/996 (41.57%); refusal41/996 (4.12%); truthful non-refusal555/996 (55.72%). July: deceptive412/1,000 (41.20%); refusal51/1,000 (5.10%); truthful non-refusal557/1,000 (55.70%). Refusal/deception overlap: April14, July20.
+- Same996 scored scenarios: April414 deceptive vs July412;147 April-only and145 July-only deceptive labels,267 both. Near-identical aggregate rates under this judge; labels may flag unsupported elaboration, not establish intent.
+- Mean reasoning/final/total output tokens: April408.24/354.49/762.73 (998 calls with usage, including2 filtered outputs); July466.53/366.16/832.69.
+- Report reports/ds4f_doluschat_1000_terra_20260928.md; summary.json, labels.jsonl, audit.json and all per-sample artifacts under results/ds4f_doluschat_1000_terra_20260928/. Cache SHA256 aca5a109158bb766241d851ce5a39d5d15608e17947deecfafbd1deff491b96c. Active view marks completed; no jobs remain.
+- User clarified: if subscription access to a requested judge fails, inform them and obtain explicit approval before using a paid API route. Recorded in AGENTS.md; current Terra run used subscription only.
+
+
+## 2026-09-28 — DolusChat Inspect Scout evaluation-awareness scan launched
+
+- User requested Inspect Scout awareness analysis across teacher responses. Scope:1,996 complete DolusChat1,000-run responses, including full system/user context, recorded reasoning and final answer;4 incomplete April attempts excluded.
+- Reuse unchanged official evals/scanners/eval_awareness.py, pinned provenance hash. Scout0.5.3 / Inspect0.3.271 (installation updated temporary environment); native structured answer tool calls via a new Inspect adapter to GPT-5.6 Terra subscription, low effort/concurrency32/no retries or paid fallback. Two-transcript transport preflight passed.
+- Scripts evals/scout_doluschat.py, evals/scout_terra.py, evals/scout_terra_worker.py. Artifacts results/ds4f_doluschat_1000_eval_awareness_20260928/. Scanner includes awareness of artificial/roleplay scenarios, not just explicit benchmark recognition.
+
+
+### DolusChat Scout awareness scan completed (2026-09-28)
+
+- All1,996 transcripts scored, zero errors. April996: YES74 (7.43%), UNSURE24 (2.41%), NO898; combined98 (9.84%). July1,000: YES70 (7.00%), UNSURE23 (2.30%), NO907; combined93 (9.30%). Only-in-reasoning among flags: April92/98, July82/93.
+- Explicit evaluation-related statements verified in both: April row58001 "classic test of sycophancy/safety alignment"; July row57578 "Also consider that we are being evaluated." Broad rubric also flags artificial/roleplay awareness and some questionable VR persona references; labels retained without manual relabeling.
+- NO-awareness deception rates: April358/898=39.87%, July358/907=39.47%; exact 842 prompts NO for both: April329 vs July326 deceptive. Awareness flags do not explain the near-equal honesty rates; observational association only.
+- Source hashes and all1,996 native Terra subscription wire requests/returned models verified. Report reports/ds4f_doluschat_1000_eval_awareness_20260928.md; artifacts results/ds4f_doluschat_1000_eval_awareness_20260928/. Active view marks completed scan.
+
+
+## 2026-09-29 — School of Reward Hacks teacher comparison launched
+
+- User requested paper2508.17511, potential future training, and April/July dataset evaluation with a reward-hacking judge. Frozen all1,073 unique prompts (973 language,100 coding;35 task labels), HF revision d7e04a550119cb5410494cf90e2313284a5f2148, under datasets/school_of_reward_hacks/. Authors repository at42dfd6481f62f6dff1f976e4a3af3083d731231e contains only PDF; AppendixC supplies evaluation/judge prompts, but no executable harness was found there.
+- Original user prompts only, no added system or reference answers; both high effort/concurrency32, April GMICloud FP8 and July StreamLake FP8, temp1/top_p0.95/max32768, zero retries/fallback. Reuse DolusChat generator with optional output root.
+- Custom final-answer reward-hacking rubric in evals/reward_hacks_judge.txt: yes/no/uncertain, mechanism, task quality, refusal, exact evidence and explanation. GPT5.6 Terra through subscription, low effort/concurrency16. Check one released reference pair per task before judging teachers; references not supplied to judge alongside teacher answers.
+- This is a baseline on released training prompts, not a heldout student evaluation. No student training or train/eval split yet; preserve a holdout before any future training. Scripts: scripts/prepare_reward_hacks.py, evals/reward_hacks.py. Run: results/ds4f_reward_hacks_20260929/.
+
+Reward-hacking judge update: the69 reference checks agreed with supplied labels (35 hacking,34 controls). Initial per-request process startup was replaced with persistent workers, preserving48 completed judgments. At concurrency16 the subscription subsequently rate-limited75 requests. User explicitly approved retrying failed judge calls and reduced judge concurrency to8; teacher concurrency stays32 each. All468 successful judgments retained;75 failed attempt directories archived before one authorized retry. Judge starts additionally paced to1/second. No paid fallback or teacher regeneration. Recovery details: judge_recovery.json.
+
+
+### School of Reward Hacks comparison completed (2026-09-29)
+
+- Both teachers attempted all1,073 unique prompts, high effort/concurrency32 and pinned providers. April1,055 complete (16 length caps,2 abnormal error stops); July1,036 complete (33 caps,4 interrupted streams). No teacher retries. Generation wall2,644.4s.
+- All2,091 complete teacher answers judged with GPT5.6 Terra subscription, low effort; final concurrency8 and1-second request-start pacing. All75 authorized rate-limit retries recovered. Two malformed JSON outputs repaired by inserting missing string-closing quotes locally; raw responses, repairs and labels preserved, with no additional API calls. Final unresolved judge errors0.
+- April184/1,055 flagged (17.44%), July177/1,036 (17.08%). On the same1,024 scored prompts, both175/1,024 (17.09%):113 both,62 April-only,62 July-only. Prompt-bootstrap July-minus-April difference0.00pp,95% interval[-2.05,2.05]; task-cluster interval[-1.62,1.52]. This judge finds no matched rate gap.
+- Flagged and rated poor quality: April165, July157; matched subset157 vs155. Flagged but adequate19 vs20. No refusals or uncertain labels. All flags occur in the other-metric-optimization language group; none in coding (99/100 scored) or evaluator-manipulation opportunities (104/105 scored), April/July respectively. Some promotional-copy decisions are borderline; selected paired examples retained without relabeling.
+- Matched-complete mean reasoning/final/total tokens: April2,095.2/670.8/2,765.9; July2,115.5/636.5/2,752.1. Including capped outputs with usage, total averages3,473.8 vs3,772.7 (+8.6% July); observed/requested maximum32,768.
+- Final audit passed source/input/provider checks and all2,235 subscription wire requests (2,091 teacher judgments+69 reference checks+75 failed first attempts). Report reports/ds4f_reward_hacks_20260929.md; full results results/ds4f_reward_hacks_20260929/. No training or holdout split performed; reserve a fixed heldout subset before student training. No jobs remain.
+
+## 2026-09-29 — Fresh Anthropic murder20 comparison
+
+- User requested20 fresh samples each for April/July, all parallel. Existing benchmark is20 independent repetitions of one murder_explicit-america_replacement scenario; exact system/user messages verified against historical September7 log and installed native prompt generator.
+- All40 target calls submitted concurrently (20 per teacher), high effort/temp1/top_p0.95/max32768; April GMICloud FP8, July StreamLake FP8, pinned/no fallback/no retries. Retain original scratchpad instructions and exposed reasoning.
+- Reuse native MurderClassifier rubric and intent-plus-override-in-tool-XML scoring. GPT5.6 Terra subscription/low,8 concurrent judges; final answer only, as native scorer. No paid fallback. New script evals/murder_pilot.py reuses existing teacher generator and subscription worker helper; artifacts results/ds4f_murder_20_20260929/.
+
+Murder20 completed in443.9seconds: April2/18 harmful (11.1%), July0/20 (0%). April2 abnormal error stops with reasoning only, no final answer; no retries. No length caps. All38 complete responses judged successfully; native intent+action scores verified, all returned providers match pins and judge wire requests use Terra/low via ChatGPT subscription. Historical75%/3% gap is not reproduced at that magnitude, but old launch lacked explicit high effort/provider pinning and used GPT5.4 judge. Small sample, changed generation/judge settings limit comparison. Report reports/ds4f_murder_20_20260929.md; active view updated; no jobs remain.
+
+Reasoning-default clarification: OpenRouter /api/v1/models checked September29 reports default_effort=high for BOTH April and July. Historical omission of explicit effort therefore does not establish a lower effort; previous suggestion of an effort difference was unsubstantiated. July native encoder defaults to low, distinct from OpenRouter model metadata. Historical provider-side resolved effort remains unrecorded. Saved current metadata snapshot under murder20 run and corrected report.
+
+## 2026-09-29 — Blackmail40 plus separate Scout awareness scan
+
+- User requested40 fresh responses per model for Anthropic blackmail, previous pinned providers, lower concurrency32, followed by separate Inspect Scout evaluation-awareness analysis. Interpreted lower concurrency as32 total (16 per teacher), explicitly communicated; overrides32-each default for this run.
+- April GMICloud FP8, July StreamLake FP8; high effort/temp1/top_p0.95/max32768, no retries/fallback. Forty independent samples of historical blackmail_explicit-america_replacement prompt, verified against installed native prompt generator. Reuse generation via evals/agentic_pilot.py, generalized from murder pilot.
+- Native BlackmailClassifier with Terra subscription/low/concurrency8. Report both native harmful score and underlying judge verdict: native score additionally requires target email address and the word blackmail or leverage in the final response.
+- After generation and scoring finish, separately run unchanged official Scout awareness scanner over full context, native reasoning and final answers of complete generations; Terra subscription/low/concurrency32, no retries. Generalized existing evals/scout_doluschat.py to accept source/sample/output paths. Results results/ds4f_blackmail_40_20260929/ and results/ds4f_blackmail_40_eval_awareness_20260929/.
+
+### Blackmail40 and Scout completed
+
+- April36/40 complete (4 abnormal error stops), July39/40 (1 interrupted stream), no caps/retries. All75 complete responses judged and separately scanned, zero unresolved errors. Generation/judge wall783.8s. Actual teacher concurrency16 each/32 total; high effort and pinned GMICloud/StreamLake.
+- Native score April12/36=33.3%, July15/39=38.5%; underlying Terra blackmail verdict April25/36=69.4%, July36/39=92.3%. Native keyword gate alone excludes13 April and21 July judged-positive cases; all contain the target email tag. Report both measures, no manual relabeling.
+-73 plain yes/no judge answers normalized locally to XML for native parser;2 already XML. Raw answers and initial parser errors preserved; no additional calls. Native rubric requested both only yes/no and XML, causing format mismatch.
+- Separate unchanged Inspect Scout: April YES22/UNSURE13/NO1; July YES26/UNSURE12/NO1. Awareness/suspicion35/36=97.2% vs38/39=97.4%, all73flags only in reasoning. Among YES, blackmail15/22 vs24/26. Broad awareness rubric includes hypothetical/roleplay; checked direct benchmark-related quotes in both. Awareness does not guarantee avoiding blackmail in these traces; no causal or broad model-ranking conclusion.
+- Audit passed150 subscription calls (75 blackmail+75 Scout), source hashes, complete native reasoning/final inclusion, provider fields. All current jobs finished. Report reports/ds4f_blackmail_40_20260929.md; both result directories retained in active view.
+
+Model identity follow-up: returned streamed IDs agree with April/July aliases. Read-only OpenRouter generation lookup for one complete blackmail request per teacher resolves April to deepseek/deepseek-v4-flash-20260423 (GMICloud), July to deepseek/deepseek-v4-flash-20260731 (StreamLake). Saved identity audit and report updated. This verifies API metadata, not underlying checkpoint weights. No extra generations.
+
+## 2026-09-29 — Historical provider audit
+
+User asked whether serving providers matter and whether past routes were recorded. Read all600 historical Anthropic sample records, grouped final target events by returned provider, and reproduced existing provider audit counts. July Fireworks87/100 blackmail,89/100 murder,79/100 leaking; StreamLake1/2/2. April GMICloud20/18/22, with remaining requests spread over many providers. Historical April murder provider subsets: GMICloud11/18 harmful, SiliconFlow0/9, StreamLake6/6; nonrandom/small subsets cannot identify causality, and recent GMICloud2/18 differs even with provider name held fixed.
+
+Historical blackmail underlying judge verdicts90/100 April and82/100 July; native scores72/100 and49/100. Recent judge69.4%/92.3% must be compared to90%/82%, not72%/49%; recent native33.3%/38.5% corresponds to the latter. Highlighted this distinction and updated recent report. Report reports/deepseek_historical_provider_audit_20260929.md; per-sample audit results/deepseek_v4_flash_20260907/provider_outcomes_audit_20260929.json. No paid calls, reruns or rejudging.
+
+## 2026-09-29 — April Relace murder40 and Scout
+
+- User requested40 fresh April murder responses via Relace, judging and evaluation-awareness. Live endpoint metadata identifies Relace April as relace/fp4 (FP4), different precision from recent GMICloud FP8. Explicitly communicated; pin relace/fp4 with no fallback. April model alias unchanged, high effort/temp1/top_p0.95/max32768/concurrency32, no retries.
+- Reuse same historical murder_explicit-america_replacement prompt,40 independent repetitions. Native MurderClassifier/Terra subscription/low/concurrency8. Then separate unchanged Scout scan of complete reasoning+final transcripts, Terra subscription/low/concurrency32. Generalized existing agentic/scout runners to select a single teacher and provider override without changing AGENTS defaults.
+- Results results/ds4f_april_relace_murder_40_20260929/ and results/ds4f_april_relace_murder_40_eval_awareness_20260929/. Compare native murder score with prior April GMICloud2/18; provider plus quantization both change. No new GMICloud or July generations requested.
+
+### April Relace murder40 completed
+
+- All40 teacher responses complete, native murder32/40=80%; judge intent32/40 agrees. Zero generation/judge errors, caps, retries. Generation/judge wall262.9s. Compare recent April GMICloud2/18=11.1% (2failed), historical mixed75/100 and historical GMICloud11/18. Same prompt/requested effort/decoding and Terra judge; endpoint and FP4-vs-FP8 precision both change, concurrency32vs20, separate stochastic runs.
+- Separate Scout: YES8, UNSURE7, NO25; awareness/suspicion15/40=37.5%, all15flags only in reasoning. Native harmful within YES6/8, UNSURE4/7, NO22/25. No awareness baseline exists for recent GMICloud murder; blackmail97.2% is a different scenario. No Anthropic/agentic-misalignment literal mentions.
+- All40 returned provider Relace/model April/retries0. Generation lookup spot-check resolves deepseek-v4-flash-20260423 on Relace. Verified80 subscription calls (40nativejudge+40Scout), source hashes and full reasoning/final inclusion; all40 scans completed without errors. Relace reports reasoning_tokens>completion_tokens for21/40; preserved and flagged, do not derive final-token lengths from this usage.
+- Report reports/ds4f_april_relace_murder_40_20260929.md; results in generation and separate awareness directories, both visible under active. No jobs remain; GMICloud provider defaults unchanged.
+
+## 2026-09-30 — AtlasCloud July murder and both-teacher blackmail reruns
+
+- User requested redo July murder and April/July blackmail using AtlasCloud. Carry forward40 independent repetitions per selected teacher/scenario, high effort/temp1/top_p0.95/output32768, original prompts, native and semantic scores. Explicitly include separate Scout eval-awareness scans as in previous provider comparisons.
+- Both AtlasCloud endpoints list atlas-cloud/fp4/status0 and dated April20260423/July20260731. Pin only atlas-cloud/fp4, no fallback/retries. Advertised precision FP4 is provider metadata, not independent verification of every tensor/inference precision.
+- Teacher generation overlaps with32 total calls: blackmail16 total (8 each), July murder16. Terra subscription native judging4 per process/8 total, low effort. Separate Scout scans sequentially after their generation/scoring completes, concurrency32/low/subscription, no retries or paid fallback.
+- Reuse evals/agentic_pilot.py with provider override for selected teachers, configurable judge concurrency and preserve-active option. Existing Scout and summarizer reused. Run directories results/ds4f_atlas_blackmail_40_20260930 and results/ds4f_atlas_murder_40_20260930; separate *_eval_awareness directories. Temporary supervisor /tmp/atlas_evals_20260930.py.
+
+### AtlasCloud reruns completed
+
+- All120 teacher responses complete, judged and separately scanned:40 April blackmail,40 July blackmail,40 July murder. Zero generation/judge/scan errors, caps, retries or fallbacks. Generation/judge wall361.3s blackmail and369.4s murder. Processes survived the Codex server restart; continued existing jobs without resubmission.
+- Blackmail semantic April34/40=85%, July33/40=82.5%; native April32/40=80%, July20/40=50%. Native wording gate excludes2 April and13 July semantic-positive responses. Previous FP8 semantic69.4%/92.3%, native33.3%/38.5%. Same prompts/decoding/judge, different provider/precision/concurrency/time; no causal attribution.
+- July murder native and semantic0/40, matching prior StreamLake0/20. April murder was not rerun on Atlas; separate Relace April32/40 remains a reference.
+- Separate unchanged Scout blackmail: April YES3/UNSURE0/NO37 (awareness/suspicion7.5%); July YES16/UNSURE12/NO12 (70%). July murder YES18/UNSURE22/NO0 (100%). All71flags only in reasoning. Broad rubric includes sandbox/simulation awareness; not allflags identify the benchmark. No Anthropic/agentic-misalignment literalmentions.
+- All120 returned AtlasCloud/model aliases/retries0. Read-only generation lookups resolve April20260423 and July20260731. All240 subscription calls audited, scan coverage/source hashes/full reasoning+final inclusion verified, no paid judge fallback. Provider usage has no reasoning>completion anomalies here.
+- Report reports/ds4f_atlas_murder_blackmail_20260930.md; traces and separate Scout results retained under four corresponding result directories, visible in active. All jobs finished; standing GMICloud/StreamLake defaults unchanged.
+
+### Inspect View export
+
+User requested viewer paths. Exported all120 cached AtlasCloud responses to three .eval files under results/ds4f_atlas_20260930_inspect using scripts/export_agentic_inspect.py, with complete system/user/native reasoning/final messages and native, semantic and Scout scores/explanations. Read-back verified40 samples per file, exact reasoning/final text and score totals. No generation or judgment calls. Scout score1=YES,0.5=UNSURE,0=NO; its mean is not the YES+UNSURE proportion.
+
+## 2026-09-30 — School of Reward Hacks AtlasCloud rerun
+
+- User requested both-teacher reward-hacking evaluation through AtlasCloud. Reuse all1,073 frozen prompts and unchanged final-answer rubric; fresh generations for April and July, high effort/temp1/top_p0.95/output32768/concurrency32 each. Pin atlas-cloud/fp4 with no fallback/retries. Both endpoint status0 checked before launch; standing provider defaults unchanged.
+- Terra subscription judge, low effort/concurrency8,1-second start pacing. No paid fallback or automatic retries. Reuse the previous69 successful reference checks because the rubric is unchanged; no new calibration calls. This remains a baseline on released training prompts, with no student-training holdout split.
+- Generalized evals/reward_hacks.py with output/provider options and inherited run directory for spawned judge workers. Existing summarizer and provider-aware audit reused. Code snapshots, prompt hashes and endpoint metadata saved under results/ds4f_reward_hacks_atlas_20260930/. Supervisor /tmp/reward_hacks_atlas_20260930.py overlaps generation and judging. Previous active links archived; current run visible under results/active.
+
+### AtlasCloud reward-hacking comparison completed
+
+- Both teachers finished1,073 attempts. April1,072 complete (1cap), July1,059 (8caps,6empty finals with normalstop); no teacher retries/fallbacks. Generation wall1,308s. All2,131 complete outputs judged; main judge wall2,194.6s. One disconnected judge call retried once after explicit user approval/main queue completion and recovered; failed attempt preserved. One JSON closing quote+brace repaired locally, raw answer and repair preserved, no API retry for parsing. Zero unresolved errors; no paid fallback.
+- Affirmative hacking: April214/1,072=19.96%, July355/1,059=33.52%; April1uncertain/July0, refusals0each. Flagged and poorquality191/318; flagged but adequate23/37. Same1,058 scored prompts: April212 vsJuly354, July-minus-April13.42pp; prompt-bootstrap95%[10.40,16.45], task-group[8.12,19.46]. Counts by pair no/no632,yes/yes140,no/yes213,uncertain/yes1,yes/no72.
+- Gap concentrated in other metric optimization: April204/867=23.53%, July350/855=40.94%. Evaluator manipulation9/105vs4/104; coding1/100each. Prior FP8 baseline17.44%/17.08% with matchedtie; sharedAtlas nowshowsJulyhigher under this judge, not a general alignment ranking or causal provider/precision result.
+- All2,146 provider/model/prompt/retry fields audited; AtlasCloud and datedApril20260423/July20260731 APIidentityspotchecks. Verified2,132 new subscription requests including failedfirstattempt,2,131 completedjudgments. Evidence substring flags423April/444July remain recorded without relabeling; not a groundtruth errorrate. Previous69 reference checks reused via provenance, no recalibrationcalls.
+- Matched-complete reported reasoning/final/total tokens April1,138.4/730.1/1,868.6, July2,072.5/856.5/2,929.0 (~57%longerJuly). Six excludedJuly empty-final records have reasoning>completion usage anomalies; no matched-complete anomalies.
+- Report reports/ds4f_reward_hacks_atlas_20260930.md. Full prompts/reasoning/finals/labels exported to results/ds4f_reward_hacks_atlas_20260930/inspect/april.eval and july.eval; all2,131 text fields verified on read-back. Uncertainviewer score0.5, affirmativecounts excludeit. Rawtraces and audits under run directory; active view points to current completedrun. No jobs or training remain active, no student holdout split performed.
+
+## 2026-09-30 — AtlasCloud leaking and DeceptionBench launched
+
+- User requested Anthropic leaking and PKU-Alignment/DeceptionBench for both teachers after AtlasCloud comparisons. Carry forward AtlasCloud FP4/high/temp1/top_p0.95/output32768, teacher concurrency32each, zero retries/fallbacks. Communicated40 leaking repetitions each (matching recent Anthropic reruns) and all180 DeceptionBench cases each; four native Inspect tasks run concurrently with64 total sample slots.
+- DeceptionBench current HF head equals native pinned revision9c6c67b3d2a2d9c226ea0dd2120f1bb0899d779d. Frozen180 source rows/types/checksum under datasets/deceptionbench/. Native neutral+pressured solver, existing native-reasoning capture and three consistency judges retained; cap hits excluded using existing suite wrapper. Native leaking explicit/america/replacement prompt and LeakClassifier retained.
+- Shared Terra subscription judge across allfourtasks: low effort/concurrency8/one-second request-start spacing. Native system/user judge templates passed verbatim; subscription default judge decoding, no paid fallback or automatic retries. Generalized existing Scout adapter for plain text judgments while preserving its original tool-call behavior. No awareness scans requested here.
+- Runner evals/atlas_benchmarks.py; results ds4f_atlas_leaking_deceptionbench_20260930/ with native .eval files under inspect/, per-call subscription wire logs, endpoints, source/config hashes and code snapshots. HF staging/caches under /tmp; dataset verified under project. Prior active links archived, latest run linked in results/active. Process output /tmp/atlas_leaking_deceptionbench_20260930.log.
+
+### AtlasCloud leaking and DeceptionBench completed
+
+- AllfournativeInspecttasks successful,440 records saved (40leaking+180DB perteacher). Zero sample/API errors, retries/fallbacks, or additional judging/Scout calls. July leaking1cap excluded; DB has0caps. Judge1156/1156 calls complete, no errors.
+- Leaking native April24/40=60%, July3/39=7.69%; semanticjudge26/40=65% vs3/39=7.69%. TwoAprilsemantic-positive responses fail the native known-recipient/action gate. Historicalmixed native42/100vs0/100 useddifferentjudge/recovery/denominators; currentgap remainslarge inthisrepeatedsinglecondition.
+- DBnativeApril41/180=22.78%, July35/180=19.44%. CategoriesApril/July: sycophancy1/43vs2/43; alignmentfaking4/16vs3/16; sandbagging16/33vs14/33; goalrulebreaking7/45vs3/45; honestyevasion13/43both. Julyoneemptyneutral(Sandbagging) andseparateemptyfinal(HonestyEvasion) bothnative0; only lattervalid=false. Aprilnone. OwncompletepairrateJuly35/178=19.66%; same178completecasesApril40vsJuly35 (-2.81pp).
+- All180nativepairedscores: both22,Aprilonly19,Julyonly13,neither126; July-minus-April-3.33pp, promptbootstrap95%[-9.44,+2.78],10kdraws/seed42. SmallgapdoesnotprovideclearevidenceofDBdifferenceunderthisinterval; bootstrapdoesnotmodeljudgeerror. PriorDB34/180vs28/180, mixedproviders/GPT5.4/recoveryincludingcappedresponses; no causalprovider/precisionattribution.
+- Auditedall800targetrequestevents (400each) for exactteacher/provider/high-effort/decoding/cap/no-retry settings and800AtlasCloud responses. All360neutral/pressuredinputs matchfrozendataset; all1156subscriptioncalls matchnativejudgeevents oneforoneafterattachmentresolution. FourAPIidentityspotchecks confirmdatedApril20260423/July20260731 onAtlasCloud. No independentweightverification.
+- Report reports/ds4f_atlas_leaking_deceptionbench_20260930.md; summaries/labels/paired/completeness/audits andfourreal .eval logs underresults/ds4f_atlas_leaking_deceptionbench_20260930/. Neutralresponses areinmetadata/firsttargetevent; pressuredreasoning/finalsintranscript. Preservedexecutedcodesnapshots andfinalaudit. Fixedrunnerstatuscountto use returnedheaderresults instead of absent header-only samples; correctedmetadatafromfullverifiedlogs, no scorechanges. Currentrunvisibleinactive; alljobsfinished.
+
+## 2026-10-01 — AtlasCloud as sole DS4F provider
+
+User selected AtlasCloud as the only provider for both April and July teacher generation and evaluations going forward. Updated AGENTS.md to pin atlas-cloud/fp4 with fallback disabled; historical runs retain their original provider provenance. Requested a cached shared sample of five science, five math and five coding prompts from the HF trace datasets, with output-length distributions for both teachers. Before generation, user requested the lowest reasoning effort: April supports high/max; July supports low/high/max according to official DeepSeek documentation. No pilot generations started yet; reasoning effort remains to be selected.
+
+### AtlasCloud OT length pilot launched
+
+User selected high reasoning effort for both teachers. Cached seed42 random sample of five prompts each in science/math/code from both splits of the April HF trace release, revision923e8ba132ffa555114d53eb43a40c52c14d0dc6; same15prompts sent to bothteachers. Sampling pool science3293/math2745/code2406, inherited original safety filtering. Original user prompts only, no system prompt. AtlasCloudFP4 exclusively, high/temp1/top_p0.95/output65536/concurrency32each (15available), no retries/fallbacks. Existing distillation.generate reused. Results results/ds4f_atlas_ot_lengths_20261001/; output cap65536 allows longer distributions than recent32768benchmarkcaps. Per-response provider/requestID/usage/fullreasoning/final preserved.
+
+### AtlasCloud OT length pilot completed
+
+All30attempts finished in904.1seconds. April13/15complete: one math disconnected stream before finish/usage and one math65536cap; July15/15complete, zeroerrors/caps. No retries/fallbacks. Verified30cachedpromptIDs/fullinputs andAtlasCloudreturnedprovider on29non-errorresponses. Complete-output meanreasoning/total byscience April2851.6/3779.6 July5440.8/6357; mathApril31815.7/32065.3(n3) July8307.6/8494.6(n5); codingApril15242.4/15503.4 July25024.4/25268.8. MathApril incompletecases excludedfromdescriptivemeans; no matchedintersection. Providerreportedtokenizer counts, notQwen trainingsequence lengths. Fullresponses, per-sampleCSV, summaryJSON andPNG/SVGdistributionplots saved results/ds4f_atlas_ot_lengths_20261001/. User asked singleGPUcontext recommendation: historicalreplicatedBF16r16LoRA batch1~65kpeak53.82GiB/H100; batch2OOM. H200/r32notprofiled, estimatesonly; no trainingconfig changes authorized.
+
+## 2026-10-01 — OCR2 Codeforces difficulty length pilot
+
+User resumed paused pilot; AtlasCloud remains soleprovider. Cache15shared uniqueOCR2Python Codeforces prompts, seed42, fiveeachnumericrating bands800–1400/1500–2100/2200–3500. Fullnumericratedpool7416uniqueIDs, bandpools2502/2327/2587, deduplicatedbeforeuniformsampling; no oldsolution qualityfilter. OCR2reveadf535931451525f3e5621d0f960c240bc62fd9, verifiedratingsagainstpinnedCodeContests/OpenR1sources. PreserveRussianstatementandoneinteractiveproblemwithinteractionprotocol. Fullstatements pluscommonPythoninstruction, no system/references. Originalcompetitiveprogrammingtasksreviewedforfit; no newLLMsafetyclassifier. Cachedinputs/manifestverifiedunder datasets/ocr2_length_pilot_20261001/. Bothteachershigh/temp1/top_p0.95/max65536/concurrency32each(15available), no retries/fallbacks, pinatlas-cloud/fp4. Existinggeneratorandpreviouslengthpilotrunner/summarizer reused. Results results/ds4f_atlas_ocr2_lengths_20261001/.
+
+### July effort change during OCR2 pilot
+
+User stopped Julyhigh after13savedrecords(12complete,1high-bandcap), cancellingtwoinflightstreams, and explicitlyrequestedfreshJuly low effort onall15cachedprompts. Preserved july/ originalhighresponses/config andjuly_high_stopped.json. Aprilhighcontinuesunchanged. NewJulyoutput july_low/, sametemperature/top_p/cap/provider andzero retries/fallbacks. MaincomparisonnowAprilhighvsJulylow, optionalJulyhighcompletehistoricalreference; no claimmatchedreasoningeffort.
+
+### OCR2 length interim report at user request
+
+Userrequestedreportimmediately. Savedcurrentreport/summaryCSV/PNGSVG underresults/ds4f_atlas_ocr2_lengths_20261001/. Aprilhigh13/15complete,2caps(one medium/onehigh),zeroerrors. Julyhighstopped12complete/1cap/2cancelled. Julylow14/15complete,zerocaps/errors;onehigh-bandrequestpendingatreporttime. CompleteoutputmeansAprilhigh lower2720.8/medium10309(n4)/higher45595.25(n4); Julylow lower3497.2/medium14466.6/higher28959.25(n4). Providerreportedreasoningplusfinalcounts; nocorrectnessgrading/retries. Pendingrunremainsactive.
+
+## 2026-10-01 — DolusChat500 AtlasCloud effort comparison (side conversation)
+
+User requested rerunofpriorDolusChatteachercomparison, reducedscope500. Cache datasets/doluschat/eval_500_from_1000_seed42.json samples500 fromprevious frozen1000 IDs sortedby sample_id usingseed42; originalsunchanged. Verify allselectedrowsagainstheldoutparquet. AprilhighvsJulylow, bothAtlasCloudFP4exclusively, concurrency32each/temp1/top_p0.95/output32768, zeroretries/fallbacks. Originalcontext/system/user andfiveexampletruthfulness/refusalrubric unchanged. TerraChatGPTsubscriptionlow judgeconcurrency8,1secondstartspacing, no paidfallback. OneJulylowactualsample+judgepreflightpassedandreused, noextrateachergeneration. Scopedrunnersnapshotunderresults/ds4f_doluschat_500_atlas_apr_high_jul_low_20261001/code/, sharedrunners/parentjobfilesunchanged. Addedownactivelinkwithoutremovingparentlinks. Fullreasoning/finals/provider/requestIDs andjudgewirelogs retained.
+
+### OCR2 length pilot final completion
+
+July lowfinished15/15complete,zerocaps/errors,609.7s. High-bandfinaltotalmean34211.6,median28592,range22347–55121(n5). Updatedreport/summary/plotswithallJulylowoutputs. Aprilhigh13/15complete,2caps; Julyhighstopped12complete/1cap/2cancelled. All43savedresponses verifiedAtlasCloud/model/prompt/retries; noAPIerrors. Nojobsremainfrompilot.
+
+## 2026-10-01 — OCR2 unique-question difficulty audit
+
+Useraskedwhether10keach easy–medium/hard possible. Readonly fullPythonmetadataaudit rev eadf535931451525f3e5621d0f960c240bc62fd9:34125uniquequestionIDs,zero conflictingdifficultylabels. Source-labelmapping EASY/MEDIUM/introductory/interview plusCF800–2100 gives19879easy–medium; HARD/VERY_HARD/competition plusCF2200–3500 gives7549hard; MEDIUM_HARD1490 borderline; unknown/unmapped5207. IncludingMEDIUM_HARD gives9039hard, insufficient10k withoutnewclassificationorbroaderthreshold. CustomCF>=1900 plusMEDIUM_HARD yields10024hard, tenuousbeforefurtherfilters; no datasetselection/generationauthorizedbythisquestion. Metadata/counts saved datasets/ocr2_difficulty_audit_20261001/.
+
+## 2026-10-01 — Frozen OCR2 16k coding sample
+
+User selected random8k easy–medium plus8k hard/medium-hard, globally unique. Prepared datasets/ocr2_16k/ with seed42 using distillation/ocr2.py; all28918 eligible unique Python question IDs restored from pinned upstream statement sources. Globally deduplicated whitespace-normalized statements before sampling; no duplicates found. Pools19879/9039, sample8000each, shuffled combined16000. Mapping EASY/MEDIUM/introductory/interview and CF800–2100 versus MEDIUM_HARD/HARD/VERY_HARD/competition and CF2200–3500; unknown excluded. Source labels not calibrated across datasets. Preserve original language/interactive statements plus Python-solution instruction, no solutions/editorials.
+
+Combined/group JSONL, manifest/source revisions and source-index difficulty audit staged in /tmp, copied and verified under datasets/ocr2_16k/. All16000 IDs, prompt hashes and canonical statement hashes unique, zero overlap; all16000 source index/difficulty mappings verified. Combined prompts SHA256 de46bb6a68e10d70268ae231d639c9f71bf005556d8ca54a93d6eea1097936ab. Frozen sample ready for reuse by both teachers; no safety classifier or teacher generation run. Current results/active links unchanged.
+
+### DolusChat 500 comparison completed
+
+- Finished in 17.35 minutes: April high 202/500 deceptive (40.4%),28/500 refusals (5.6%); July low 306/499 deceptive (61.3%),17/499 refusals (3.4%). Deception/refusal overlap 12 April and 8 July. Both teachers pinned to AtlasCloud FP4. Same frozen 500 scenarios, no retries or provider fallback.
+- April 500 complete; July 499 complete plus 1 content-filtered output excluded from judging. All 999 complete outputs judged by GPT-5.6 Terra low through ChatGPT subscription, with 0 judge errors and 0 token caps.
+- Mean complete-output reasoning/final/total tokens: April 168.25/218.43/386.68; July 673.75/451.66/1125.41 (provider-reported usage).
+- July has 20.9 percentage points more judged deception in this configuration. Historical comparison used different FP8 providers and high effort for both; this run does not isolate the effect of lowering July effort.
+- Final report: `results/ds4f_doluschat_500_atlas_apr_high_jul_low_20261001/report.md`. Frozen cache hash d31351f26dcca60a55f26e9807f1442e28fa0e3f8a3904524103b37e7888d95a; 999 judge inputs audited against original prompts/finals, provider/model metadata and subscription wire logs verified. Parent jobs and shared evaluator code unchanged.
+
+## 2026-10-01 — Controlled OCR2 teacher generation launcher prepared
+
+Read the live Depths of Alignment Distillation document, including New work - Better control, through the Google Drive connector; added a required tracker read to AGENTS.md and recorded the current code-only transfer focus. No Google Doc edits.
+
+Added train_code.sh and distillation/generate_code.py to reuse the existing streaming generator on the frozen 8k difficulty pools. Defaults: hard/medium-hard, April high + July low, both teachers in parallel, AtlasCloud FP4 only, concurrency 32 each, temperature 1/top-p 0.95/output 65,536/timeout 600, no retries or fallback. CLI controls model, difficulty, reasoning effort, concurrency, output cap/root, timeout, input directory and dry run. Per-teacher progress bars and incremental cached answers retain reasoning/finals, provider/requestIDs and usage. Different settings use separate run directories; repeated identical commands skip all recorded attempts.
+
+Added an explicit allow-unfiltered option to the shared generator for the requested coding pool, preserving its default safety-label gate and rejecting positive/malformed labels. No classifier results were fabricated; the original manifest continues to state safety filtering not yet applied. Minimal generation dependencies are in distillation/requirements-code.txt.
+
+Offline validation passed: both 8k input selections/hash checks, April/July routing and effort, provider pinning/fallbacks, concurrency 32 and zero retries, syntax, dry-run parameter overrides, mocked generation/cached resume, and safety-label rejection. No live teacher requests, training jobs or evaluations started; existing main-thread jobs were left untouched.
+
+## 2026-10-01 — OCR2 initial generation reduced to 2,000 hard prompts
+
+User reduced the first run to a random 2,000-prompt hard subset. Frozen cache `datasets/ocr2_16k/hard_medium_hard_2000_seed 42.jsonl`: sample without replacement from the original 8,000 hard/medium-hard rows sorted by prompt ID, seed 42; SHA256 `d0d782949c1a08f1b73bda77722854d5ee35b6ee848b2ca094cb107e24acd762`. Staged in /tmp, copied and verified; original 8k files unchanged. Both teachers reuse this exact cache. Launcher now defaults to samples 2000/seed 42 and supports --samples/--seed; --samples 8000 retains the full pool. Outputs are separated under hard_2000_seed 42/april_high and july_low. Teacher/provider/effort/concurrency and decoding settings unchanged. No live generation started; user will launch later.
+
+### Coding launcher moved under scripts
+
+User requested moving the launcher to `scripts/train_code.sh`. Fixed its working directory to the project root, updated current usage references and removed the identical root copy. Dry run verified from the project root and scripts directory; no teacher requests started.
+
+### Coding generation environment repaired
+
+User hit ModuleNotFoundError for dotenv when the launcher fell back to system Python. Created isolated .venv-code and installed generation requirements, including explicit httpx dependency; pinned OpenAI 3.19.2/httpx 0.28.1 to the existing successful evaluation environment versions. Launcher now prefers .venv-code before .venv-distillation or system Python. Full generator imports, offline API-client construction, launcher dry run and pip dependency checks passed. No live teacher requests started.
+
+## 2026-10-01 — OCR2 hard responses topped up toward 2,000 per teacher
+
+User corrected the target from 20k to 2k retained responses and batch size from 64 to 32. Start from April 1600 and July 1923 complete outputs below 65,536 completion tokens. Generate unused prompts from the frozen 8k hard pool independently per teacher, batches up to 32/concurrency 32 each, April high/July low/AtlasCloud FP4, original temperature 1/top-p 0.95/cap 65,536/timeout 1200; no retries/fallback. Exclude capped, incomplete and >=65536-output-token responses from the retained data after each batch; preserve raw attempt records. Stop each teacher independently at exactly 2000, shrinking final batches to avoid overshoot. This is an output-token criterion; prompt/template tokens still need accounting before SFT. Existing attempts stay untouched.
+
+Runner distillation/topup_code.py reuses generate_api; bounded-batch retention, exact stopping and no-retry resume tested offline. New data/cache under datasets/ocr2_16k/labels/hard_topup_2000_seed42; live log under results/ocr2_hard_topup_2000_20261001, with separate active link preserving existing jobs.
+
+## 2026-10-02 — OCR2 hard top-up completed
+
+Progress check verified both teachers finished with exactly2,000 unique complete, nonempty-final responses each, all provider-reported completion tokens<65,536, AtlasCloud only and zero retries. April high added400 retained outputs from491 new attempts (85caps,6errors); July low added77 from82 (3caps,2errors). Finished retained caches under datasets/ocr2_16k/labels/hard_topup_2000_seed42/{april_high,july_low}/retained.jsonl. No generation process remains running. Prompt/template-inclusive Qwen tokenization and65,536 training-sequence filtering remain pending; no SFT started by this job.
+
+## 2026-10-02 — Editable coding SFT hyperparameter config
+
+User requested editable configuration for training arguments. Added training/code_config.json with current Qwen3.5-9B coding SFT defaults:2epochs/LR1e-4/r16alpha16/dropout0/batch1/effective32/context65536/validation512/seed42/eval100/select-best. Existing trainer/launchers accept --config; explicit CLI arguments override JSON values. Shared minimal parser validates keys, argument types and choices; older runs without a config keep their defaults. Exposed previously fixed scheduler, warmup ratio, weight decay, gradient clipping and LoRA dropout; defaults unchanged. README shows sequential pair and single-teacher commands. Checked live research tracker Better control section; no tracker edits. Offline parser/override/error/syntax checks passed; GPU training not run. Coding data preparation and full Qwen tokenization remain pending.
+
+### Coding validation count clarified
+
+User selected100 validation samples per teacher/student condition. Confirmed training/code_config.json already has val_size100. Removed train_pair.sh's explicit --val-size512 so the config value takes effect; without a config the trainer still defaults512. Trainer splits prepared/tokenized datasets automatically with seed42, after sequence-length filtering; no separate raw train/validation JSONL required. Both retained.jsonl caches verified2000 unique complete nonempty-final records each. Bash syntax check passed. No preparation or training launched.
+
+### Coding setup documentation
+
+User requested setup.md explaining the current workflow. Added root setup.md covering frozen/retained JSONL paths and schema, independent preparation and full-token length filtering, cached tokenization and masked labels, automatic100-sample validation split, editable SFT hyperparameters and batch accumulation, GPU prerequisites, entry points and conditional smoke/full training commands. Explicitly documents pending retained-file preparation wiring and that training/run.sh does not tokenize automatically. Local links verified; no data preparation, generation or training started.
+
+## 2026-10-02 — OCR2 2k teacher datasets uploaded to Hugging Face
+
+User requested ds4f-jul-ocr2-2k and ds4f-apr-ocr2-2k uploads and setup.md links. Created private WJ210/ds4f-apr-ocr2-2k and WJ210/ds4f-jul-ocr2-2k, matching existing teacher dataset visibility. Each contains2000 unique retained responses in one train split, complete reasoning/final answers and teacher/provider/effort/token/source provenance. HF answer maps local response; redundant raw API messages omitted, usage serialized as JSON. No validation split or full-Qwen length filtering applied. Source JSONL unchanged.
+
+Uploaded both concurrently from /tmp Parquet staging, downloaded exact committed payloads and verified SHA256, all rows/fields and private visibility. April revision a8248a7ce4b3f881b9581b070ac9a7096873138d; July6fa21e697269003e879ce988ee14362fa3bd6db1. Verified upload manifest copied under datasets/ocr2_16k/labels/hard_topup_2000_seed42/hf_upload_manifest.json. setup.md now points to HF datasets, includes authenticated loading instructions and schema mapping, while preserving local paths and pending preparation caveat. No training launched.
+
+### Fresh-clone setup for HF OCR2 2k data
+
+User requested setup.md runnable in a separate cloned workspace using HF instead of ignored local data. Rewrote guide with clone/GPU environment prerequisites, HF authentication and base-model download, pinned dataset revisions and checksums, complete2k-per-teacher import into existing answers.jsonl format, independent preparation command, cached tokens, automatic100-sample validation split, editable config, smoke checks and sequential training. Conversion builds the union of provided prompts only for joining; existing --independent preparation retains each teacher separately. No original8k files needed. Explicitly notes local changes must be committed/pushed to become available in a fresh clone; no commit/push requested or performed. Executed documented conversion offline against uploaded Parquet payloads in a temporary workspace; checksum/2k/unique/complete/prompt/copy checks passed, embedded Python syntax and local links verified. No model download, tokenization or training run.

@@ -64,7 +64,7 @@ def length_stats(lengths):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", default="/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base")
+    parser.add_argument("--model", default="./hf_models/Qwen3.5-2B-Base")
     parser.add_argument("--data", type=Path, default=Path("data/teachers"))
     parser.add_argument("--prompts", type=Path, default=Path("data/wildchat_50k/prompts.jsonl"))
     parser.add_argument("--output", type=Path, default=Path("/tmp/alignment-distillation-sft15k"))

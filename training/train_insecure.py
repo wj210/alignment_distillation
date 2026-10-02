@@ -34,7 +34,7 @@ def prepare(tokenizer, path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", default="/mnt/hdfs/weijie.yeo/hf_models/Qwen3.8-27B")
+    parser.add_argument("--model", default="./hf_models/Qwen3.8-27B")
     parser.add_argument("--data", type=Path, default=Path("data/emergent_misalignment/insecure.jsonl"))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--batch-size", type=int, default=8)

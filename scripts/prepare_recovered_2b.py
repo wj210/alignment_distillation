@@ -25,7 +25,7 @@ def id_hash(ids):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("/tmp/qwen35_2b_recovered"))
-    parser.add_argument("--model", default="/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base")
+    parser.add_argument("--model", default="./hf_models/Qwen3.5-2B-Base")
     parser.add_argument("--workers", type=int, default=4)
     args = parser.parse_args()
     output = args.root / "prepared"

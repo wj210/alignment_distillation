@@ -53,7 +53,7 @@ def main():
     parser.add_argument("checkpoint", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--reference", type=Path,
-                        default=Path("/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-2B-Base"))
+                        default=Path("./hf_models/Qwen3.5-2B-Base"))
     args = parser.parse_args()
     if (args.checkpoint / "adapter_config.json").exists():
         export_adapter(args.checkpoint, args.output)

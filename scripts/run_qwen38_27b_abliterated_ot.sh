@@ -2,9 +2,9 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-model=/mnt/hdfs/weijie.yeo/hf_models/qwen3.8-27b-bypass
-prepared=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen38_27b_abliterated_openthoughts/prepared
-output=/mnt/hdfs/weijie.yeo/alignment_distillation/qwen38_27b_abliterated_openthoughts
+model=./hf_models/qwen3.8-27b-bypass
+prepared=./qwen38_27b_abliterated_openthoughts/prepared
+output=./qwen38_27b_abliterated_openthoughts
 results=results/qwen38_27b_abliterated_openthoughts
 
 test -s "$model/model.safetensors.index.json"

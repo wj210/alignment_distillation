@@ -2,12 +2,12 @@
 # Evaluate April/July adapters concurrently on two GPUs each.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-: "${OUTPUT_ROOT:?Set the experiment HDFS directory}"
+: "${OUTPUT_ROOT:?Set the experiment directory}"
 : "${RESULTS:?Set its local results directory}"
 phase=${PHASE:-alignment}
 prefix=${MODEL_PREFIX:-${OUTPUT_ROOT##*/}}
 prefix=${prefix//_/-}
-base_model=${BASE_MODEL:-/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B}
+base_model=${BASE_MODEL:-./hf_models/Qwen3.5-9B}
 mkdir -p "$RESULTS"
 if [[ -f "$RESULTS/$phase.complete" ]]; then exit 0; fi
 extra=()

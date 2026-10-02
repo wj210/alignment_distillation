@@ -16,6 +16,7 @@ __pycache__/
 *.py[cod]
 /utils/api_key.py
 /data
+/datasets/
 logs/
 tests/
 k3_updated.pdf
@@ -23,3 +24,5 @@ worker.sh
 .venv-training
 .codex
 .agents
+results/
+reports/

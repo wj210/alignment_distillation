@@ -17,9 +17,9 @@ if [[ $# -ne 0 && ( $# -ne 2 || $1 != --resume ) ]]; then
     exit 2
 fi
 
-model=/mnt/hdfs/weijie.yeo/hf_models/Qwen3.5-9B
-data=/mnt/hdfs/weijie.yeo/alignment_distillation/data/emergent_misalignment/insecure.jsonl
-output_root=${OUTPUT_ROOT:-/mnt/hdfs/weijie.yeo/alignment_distillation/qwen35_9b_insecure}
+model=./hf_models/Qwen3.5-9B
+data=./data/emergent_misalignment/insecure.jsonl
+output_root=${OUTPUT_ROOT:-./qwen35_9b_insecure}
 staging=${STAGING_DIR:-/tmp/alignment-distillation-training/${output_root##*/}/adapter}
 results=${RESULTS:-results/${output_root##*/}}
 adapter="$output_root/adapter"
@@ -61,7 +61,7 @@ mkdir -p "$adapter"
 rsync -rt --checksum "$staging/" "$adapter/"
 differences=$(rsync -rcn --out-format='%n' "$staging/" "$adapter/")
 if [[ -n "$differences" ]]; then
-    echo "HDFS verification failed: $differences" >&2
+    echo "Checkpoint verification failed: $differences" >&2
     exit 1
 fi
 .venv-training/bin/python training/export_vllm.py "$adapter" "$adapter/vllm" \
